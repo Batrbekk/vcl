@@ -1,0 +1,22 @@
+<svg width="1164" height="943" viewBox="0 0 1164 943" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_23_40)">
+<mask id="mask0_23_40" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="1164" height="943">
+<path d="M0 0H1164V943H0V0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_23_40)">
+<g opacity="0.15" filter="url(#filter0_f_23_40)">
+<path d="M713.844 704.001C792.065 659.595 796.329 519.412 723.368 390.894C650.407 262.376 527.85 194.19 449.63 238.597C371.409 283.003 367.145 423.186 440.106 551.704C513.067 680.222 635.624 748.408 713.844 704.001Z" fill="#9077FF"/>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_23_40" x="48.0569" y="-114.97" width="1067.36" height="1172.54" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="170" result="effect1_foregroundBlur_23_40"/>
+</filter>
+<clipPath id="clip0_23_40">
+<rect width="1164" height="943" fill="white"/>
+</clipPath>
+</defs>
+</svg>
