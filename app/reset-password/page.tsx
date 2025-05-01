@@ -1,12 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { useResetStore } from "@/store/reset-store"
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
 import { AuthDecorator } from "@/components/auth/auth-decorator"
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email')
   const { setEmail } = useResetStore()
@@ -40,5 +41,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Загрузка...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   )
 } 

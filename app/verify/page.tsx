@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { VerifyCodeForm } from "@/components/auth/verify-code-form"
 import { useVerifyStore } from "@/store/verify-store"
 import { AuthDecorator } from "@/components/auth/auth-decorator"
 
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get("email")
@@ -41,23 +41,29 @@ export default function VerifyPage() {
   }
 
   return (
-    <>
-      <div className="container relative min-h-screen flex flex-col items-center justify-center px-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
-        <AuthDecorator />
-        <div className="flex items-center justify-center w-full py-12 lg:p-8">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <VerifyCodeForm
-              email={email}
-              mode={mode}
-              onVerify={handleVerify}
-              onResend={handleResend}
-              isLoading={isLoading}
-              canResend={canResend}
-              timeLeft={timeLeft}
-            />
-          </div>
+    <div className="container relative min-h-screen flex flex-col items-center justify-center px-4 md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+      <AuthDecorator />
+      <div className="flex items-center justify-center w-full py-12 lg:p-8">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <VerifyCodeForm
+            email={email}
+            mode={mode}
+            onVerify={handleVerify}
+            onResend={handleResend}
+            isLoading={isLoading}
+            canResend={canResend}
+            timeLeft={timeLeft}
+          />
         </div>
       </div>
-    </>
+    </div>
+  )
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<div>Загрузка...</div>}>
+      <VerifyContent />
+    </Suspense>
   )
 } 
