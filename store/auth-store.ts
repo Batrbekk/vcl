@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { toast } from "sonner"
+import Cookies from 'js-cookie'
 
 interface AuthState {
   token: string | null
@@ -32,6 +33,12 @@ export const useAuthStore = create<AuthState>()(
           }
 
           set({ token: result.token })
+          Cookies.set('token', result.token, { 
+            expires: 1,
+            secure: true,
+            sameSite: 'strict'
+          })
+          
           toast.success("Успешная авторизация")
         } catch (error) {
           toast.error(error instanceof Error ? error.message : "Ошибка авторизации")
@@ -42,6 +49,8 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         set({ token: null })
+        Cookies.remove('token')
+        window.location.href = "/"
         toast.success("Вы успешно вышли из системы")
       },
     }),

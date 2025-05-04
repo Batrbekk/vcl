@@ -91,7 +91,7 @@ export function LoginForm({ className, onForgotPassword, ...props }: LoginFormPr
           <Button 
             type="submit"
             disabled={isLoading} 
-            className="bg-[#09090F] hover:bg-[#09090F]/90 w-full"
+            className="bg-[#09090F] hover:bg-[#09090F]/90 w-full cursor-pointer"
           >
             {isLoading && (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -114,7 +114,7 @@ export function LoginForm({ className, onForgotPassword, ...props }: LoginFormPr
         variant="outline" 
         type="button" 
         disabled={isLoading}
-        className="border-[#09090F] text-[#09090F] hover:bg-[#09090F]/10"
+        className="border-[#09090F] text-[#09090F] hover:bg-[#09090F]/10 cursor-pointer"
       >
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
