@@ -71,7 +71,7 @@ const sidebarItems = [
         icon: Phone
       },
       {
-        title: "Исходящие вызовы",
+        title: "Групповые вызовы",
         href: "/dashboard/outbound",
         icon: PhoneForwarded
       }
