@@ -21,7 +21,7 @@ export default function ManagersPage() {
   }
 
   return (
-    <div className="min-h-screen w-full p-6 relative">
+    <div className="min-h-screen w-full p-8 relative">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Управление менеджерами</h1>
       </div>

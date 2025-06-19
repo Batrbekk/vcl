@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 import { 
   LayoutDashboard, 
-  FileText, 
   Users, 
   Phone, 
   BookOpen, 
@@ -38,24 +37,19 @@ const sidebarItems = [
     icon: Users
   },
   {
-    title: "Задачи",
-    href: "/dashboard/tasks",
-    icon: FileText
+    title: "Агенты",
+    href: "/dashboard/agents",
+    icon: Bot
   },
   {
     title: "История звонков",
-    href: "/dashboard/calls",
+    href: "/dashboard/history",
     icon: Phone
   },
   {
     title: "База знаний",
     href: "/dashboard/knowledge",
     icon: BookOpen
-  },
-  {
-    title: "Агенты",
-    href: "/dashboard/agents",
-    icon: Bot
   },
   {
     title: "Настройки",
@@ -123,7 +117,7 @@ export default function DashboardLayout({
         </Sidebar>
 
         {/* Main content */}
-        <main className="overflow-y-auto w-full p-8">
+        <main className="relative overflow-y-auto w-full">
           {children}
         </main>
       </div>

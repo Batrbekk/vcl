@@ -3,7 +3,7 @@ import { CreateCard } from '@/components/kanban/CreateCard'
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen w-full p-6 relative">
+    <div className="min-h-screen w-full p-8 relative">
       <h1 className="text-3xl font-bold mb-8">Добро пожаловать в панель управления</h1>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full mb-10">
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-8 w-full">
