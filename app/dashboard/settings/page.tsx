@@ -20,8 +20,8 @@ export default function SettingsPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="profile">Профиль</TabsTrigger>
-              <TabsTrigger value="password">Смена пароля</TabsTrigger>
+              <TabsTrigger value="profile" className="cursor-pointer">Профиль</TabsTrigger>
+              <TabsTrigger value="password" className="cursor-pointer">Смена пароля</TabsTrigger>
             </TabsList>
             
             <TabsContent value="profile">

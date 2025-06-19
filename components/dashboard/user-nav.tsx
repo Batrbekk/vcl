@@ -1,6 +1,7 @@
 "use client"
 
-import { User, Settings, LogOut } from "lucide-react"
+import { User, HelpCircle, Settings, LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,15 @@ import { useAuthStore } from "@/store/auth-store"
 export function UserNav() {
   const user = useUserStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
+  const router = useRouter()
+
+  const handleSupportClick = () => {
+    router.push("/dashboard/support")
+  }
+
+  const handleSettingsClick = () => {
+    router.push("/dashboard/settings")
+  }
 
   return (
     <DropdownMenu>
@@ -33,11 +43,17 @@ export function UserNav() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" side="right" className="w-56">
-        <DropdownMenuItem className="hover:!bg-korn/20">
-          <User className="mr-2 h-4 w-4" />
-          <span>Профиль</span>
+        <DropdownMenuItem 
+          className="hover:!bg-korn/20"
+          onClick={handleSupportClick}
+        >
+          <HelpCircle className="mr-2 h-4 w-4" />
+          <span>Служба поддержки</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="hover:!bg-korn/20">
+        <DropdownMenuItem 
+          className="hover:!bg-korn/20"
+          onClick={handleSettingsClick}
+        >
           <Settings className="mr-2 h-4 w-4" />
           <span>Настройки</span>
         </DropdownMenuItem>

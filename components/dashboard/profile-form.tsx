@@ -1,42 +1,45 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useUserStore } from "@/store/user-store"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { toast } from "sonner"
 
 export function ProfileForm() {
-  const { user } = useUserStore()
+  const { user, updateProfile } = useUserStore()
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    email: user?.email || "",
-    companyName: user?.companyName || "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    companyName: "",
   })
   const [isLoading, setIsLoading] = useState(false)
+
+  // Синхронизируем formData с данными пользователя
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        companyName: user.companyName || "",
+      })
+    }
+  }, [user])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/users/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (response.ok) {
-        toast.success("Профиль успешно обновлен")
-      } else {
-        const error = await response.json()
-        toast.error(error.message || "Ошибка при обновлении профиля")
+      const updateData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        companyName: formData.companyName,
       }
-    } catch {
-      toast.error("Произошла ошибка при обновлении профиля")
+
+      await updateProfile(updateData)
+    } catch (error) {
+      console.error("Error updating profile:", error)
     } finally {
       setIsLoading(false)
     }
@@ -71,6 +74,7 @@ export function ProfileForm() {
           id="email"
           type="email"
           value={formData.email}
+          disabled
           onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
           required
         />
@@ -86,7 +90,7 @@ export function ProfileForm() {
         />
       </div>
 
-      <Button type="submit" disabled={isLoading}>
+      <Button type="submit" disabled={isLoading} className="cursor-pointer">
         {isLoading ? "Сохранение..." : "Сохранить изменения"}
       </Button>
     </form>
