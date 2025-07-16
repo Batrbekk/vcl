@@ -9,7 +9,6 @@ import {
   LayoutDashboard, 
   Users, 
   Phone, 
-  PhoneForwarded,
   BookOpen, 
   Bot, 
   Settings, 
@@ -54,32 +53,22 @@ const sidebarItems = [
         title: "База знаний",
         href: "/dashboard/knowledge",
         icon: BookOpen
-      }
-    ]
-  },
-  {
-    group: "settings",
-    items: [
-      {
-        title: "Настройки",
-        href: "/dashboard/settings",
-        icon: Settings
       },
       {
         title: "Номера телефонов",
         href: "/dashboard/phone-numbers",
         icon: Phone
-      },
-      {
-        title: "Групповые вызовы",
-        href: "/dashboard/outbound",
-        icon: PhoneForwarded
       }
     ]
   },
   {
     group: "support",
     items: [
+      {
+        title: "Настройки",
+        href: "/dashboard/settings",
+        icon: Settings
+      },
       {
         title: "Служба поддержки",
         href: "/dashboard/support",
