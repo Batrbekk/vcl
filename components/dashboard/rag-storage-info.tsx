@@ -31,7 +31,7 @@ export function RagStorageInfo() {
         <span>
           RAG Storage: <span className="font-bold">{formatBytes(total_used_bytes)}</span> / {formatBytes(total_max_bytes)}
         </span>
-      </div>ya
+      </div>
     </div>
   )
 } 
