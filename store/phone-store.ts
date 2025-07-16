@@ -37,6 +37,12 @@ export interface OutboundCallResponse {
   sip_call_id?: string // для SIP trunk
 }
 
+export interface PhoneNumbersResponse {
+  success: boolean
+  data: PhoneNumber[]
+  count: number
+}
+
 interface PhoneStore {
   phoneNumbers: PhoneNumber[]
   isLoading: boolean
@@ -44,22 +50,22 @@ interface PhoneStore {
   fetchPhoneNumbers: () => Promise<void>
   deletePhoneNumber: (phoneNumberId: string) => Promise<void>
   createTwilioPhoneNumber: (data: {
-    phone_number: string
+    phoneNumber: string
     label: string
     sid: string
     token: string
   }) => Promise<{ success: boolean; phoneNumber?: PhoneNumber; error?: string }>
   createSipTrunkPhoneNumber: (data: {
-    phone_number: string
+    phoneNumber: string
     label: string
-    termination_uri: string
+    address: string
+    origination_uri: string
     credentials: {
       username: string
       password: string
     }
     media_encryption: string
     headers: Record<string, string>
-    address: string
     transport: string
   }) => Promise<{ success: boolean; phoneNumber?: PhoneNumber; error?: string }>
   fetchPhoneNumberDetails: (phoneNumberId: string) => Promise<PhoneNumber | null>
@@ -95,8 +101,19 @@ export const usePhoneStore = create<PhoneStore>((set, get) => ({
         throw new Error('Ошибка при получении списка номеров телефонов')
       }
 
-      const data: PhoneNumber[] = await response.json()
-      set({ phoneNumbers: data })
+      const responseData: PhoneNumbersResponse = await response.json()
+      // Маппинг: если приходит id, то делаем phone_number_id
+      const mappedData = (responseData.data || []).map((item: unknown) => {
+        if (typeof item === 'object' && item !== null) {
+          const obj = item as Record<string, unknown>
+          return {
+            ...obj,
+            phone_number_id: obj.phone_number_id || obj.id
+          } as PhoneNumber
+        }
+        return item as PhoneNumber
+      })
+      set({ phoneNumbers: mappedData })
       
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ошибка при получении списка номеров телефонов')
@@ -155,7 +172,7 @@ export const usePhoneStore = create<PhoneStore>((set, get) => ({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          phone_number: data.phone_number,
+          phoneNumber: data.phoneNumber,
           label: data.label,
           sid: data.sid,
           token: data.token,
@@ -175,10 +192,10 @@ export const usePhoneStore = create<PhoneStore>((set, get) => ({
       
       // Создаем объект PhoneNumber из ответа
       const newPhoneNumber: PhoneNumber = {
-        phone_number_id: responseData.phone_number_id,
-        phone_number: responseData.phone_number,
-        label: responseData.label,
-        provider: responseData.provider,
+        phone_number_id: responseData.data?.id || responseData.phone_number_id,
+        phone_number: responseData.data?.phoneNumber || responseData.phone_number,
+        label: responseData.data?.label || responseData.label,
+        provider: responseData.data?.provider || responseData.provider,
         assigned_agent: null,
         provider_config: {
           address: '',
@@ -223,14 +240,15 @@ export const usePhoneStore = create<PhoneStore>((set, get) => ({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          phone_number: data.phone_number,
+          phoneNumber: data.phoneNumber,
           label: data.label,
-          termination_uri: data.termination_uri,
+          address: data.address,
+          origination_uri: data.origination_uri,
           provider: 'sip_trunk',
-          credentials: data.credentials,
+          username: data.credentials.username || undefined,
+          password: data.credentials.password || undefined,
           media_encryption: data.media_encryption,
           headers: data.headers,
-          address: data.address,
           transport: data.transport
         })
       })
@@ -247,10 +265,10 @@ export const usePhoneStore = create<PhoneStore>((set, get) => ({
       
       // Создаем объект PhoneNumber из ответа
       const newPhoneNumber: PhoneNumber = {
-        phone_number_id: responseData.phone_number_id,
-        phone_number: responseData.phone_number,
-        label: responseData.label,
-        provider: responseData.provider,
+        phone_number_id: responseData.data?.id || responseData.phone_number_id,
+        phone_number: responseData.data?.phoneNumber || responseData.phone_number,
+        label: responseData.data?.label || responseData.label,
+        provider: responseData.data?.provider || responseData.provider,
         assigned_agent: null,
         provider_config: {
           address: data.address,

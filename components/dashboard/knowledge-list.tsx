@@ -108,15 +108,19 @@ export function KnowledgeList() {
     if (!sortConfig.key) return 0
 
     if (sortConfig.key === 'created_at') {
+      const aTime = a.metadata?.created_at_unix_secs || 0
+      const bTime = b.metadata?.created_at_unix_secs || 0
       return sortConfig.direction === "asc" 
-        ? a.metadata.created_at_unix_secs - b.metadata.created_at_unix_secs
-        : b.metadata.created_at_unix_secs - a.metadata.created_at_unix_secs
+        ? aTime - bTime
+        : bTime - aTime
     }
 
     if (sortConfig.key === 'size_bytes') {
+      const aSize = a.metadata?.size_bytes || 0
+      const bSize = b.metadata?.size_bytes || 0
       return sortConfig.direction === "asc"
-        ? a.metadata.size_bytes - b.metadata.size_bytes
-        : b.metadata.size_bytes - a.metadata.size_bytes
+        ? aSize - bSize
+        : bSize - aSize
     }
 
     if (sortConfig.key === 'name') {
@@ -315,12 +319,14 @@ export function KnowledgeList() {
                   </TableCell>
                   <TableCell className="px-6">{truncateString(doc.name, 50)}</TableCell>
                   <TableCell className="px-6">
-                    {formatFileSize(doc.metadata.size_bytes)}
+                    {doc.metadata?.size_bytes ? formatFileSize(doc.metadata.size_bytes) : 'Размер недоступен'}
                   </TableCell>
                   <TableCell className="px-6">
-                    {format(new Date(doc.metadata.created_at_unix_secs * 1000), 'dd MMM yyyy г., HH:mm', {
-                      locale: ru,
-                    })}
+                    {doc.metadata?.created_at_unix_secs ? 
+                      format(new Date(doc.metadata.created_at_unix_secs * 1000), 'dd MMM yyyy г., HH:mm', {
+                        locale: ru,
+                      }) : 'Дата недоступна'
+                    }
                   </TableCell>
                   <TableCell className="px-6">
                     <div className="flex gap-2 justify-end">

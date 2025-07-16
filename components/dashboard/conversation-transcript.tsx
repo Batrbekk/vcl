@@ -9,12 +9,18 @@ interface TranscriptItem {
   time_in_call_secs: number;
   tool_calls?: unknown[];
   tool_results?: unknown[];
-  llm_usage?: {
-    model_usage?: Record<string, unknown>;
-  };
+  feedback?: unknown;
+  llm_override?: unknown;
   conversation_turn_metrics?: {
     metrics?: Record<string, { elapsed_time: number }>;
   };
+  rag_retrieval_info?: unknown;
+  llm_usage?: {
+    model_usage?: Record<string, unknown>;
+  };
+  interrupted?: boolean;
+  original_message?: string | null;
+  source_medium?: string | null;
 }
 
 interface ConversationTranscriptProps {

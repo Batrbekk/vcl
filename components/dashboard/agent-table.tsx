@@ -54,7 +54,7 @@ export function AgentTable() {
   const [currentPage, setCurrentPage] = useState(1)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [agentToDelete, setAgentToDelete] = useState<{ id: string; name: string } | null>(null)
-  const [sortField, setSortField] = useState<"name" | "created_at" | null>(null)
+  const [sortField, setSortField] = useState<"name" | "createdAt" | null>(null)
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const itemsPerPage = 10
 
@@ -70,8 +70,8 @@ export function AgentTable() {
       return sortDirection === "asc" ? comparison : -comparison
     }
     
-    if (sortField === "created_at") {
-      const comparison = a.created_at_unix_secs - b.created_at_unix_secs
+    if (sortField === "createdAt") {
+      const comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       return sortDirection === "asc" ? comparison : -comparison
     }
     
@@ -107,7 +107,7 @@ export function AgentTable() {
     }
   }
 
-  const handleSort = (field: "name" | "created_at") => {
+  const handleSort = (field: "name" | "createdAt") => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc")
     } else {
@@ -181,11 +181,11 @@ export function AgentTable() {
               <TableHead className="px-6">ID агента</TableHead>
               <TableHead 
                 className="px-6 cursor-pointer hover:bg-muted/50 select-none"
-                onClick={() => handleSort("created_at")}
+                onClick={() => handleSort("createdAt")}
               >
                 <div className="flex items-center gap-2">
                   Создан
-                  {sortField === "created_at" ? (
+                  {sortField === "createdAt" ? (
                     sortDirection === "asc" ? (
                       <ChevronUp className="h-4 w-4" />
                     ) : (
@@ -209,14 +209,14 @@ export function AgentTable() {
             ) : (
               paginatedAgents.map((agent) => (
                 <TableRow 
-                  key={agent.agent_id} 
+                  key={agent.id} 
                   className="hover:bg-muted/50 cursor-pointer"
-                  onClick={() => router.push(`/dashboard/agents/detail/${agent.agent_id}`)}
+                  onClick={() => router.push(`/dashboard/agents/detail/${agent.id}`)}
                 >
                   <TableCell className="font-medium px-6">{agent.name}</TableCell>
-                  <TableCell className="px-6 font-mono text-sm">{agent.agent_id}</TableCell>
+                  <TableCell className="px-6 font-mono text-sm">{agent.id}</TableCell>
                   <TableCell className="px-6">
-                    {format(new Date(agent.created_at_unix_secs * 1000), 'dd.MM.yyyy HH:mm', {
+                    {format(new Date(agent.createdAt), 'dd.MM.yyyy HH:mm', {
                       locale: ru
                     })}
                   </TableCell>
@@ -229,7 +229,7 @@ export function AgentTable() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleTestAgent(agent.agent_id)
+                              handleTestAgent(agent.id)
                             }}
                             className="cursor-pointer"
                           >
@@ -249,7 +249,7 @@ export function AgentTable() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleCopyId(agent.agent_id)
+                              handleCopyId(agent.id)
                             }}
                             className="cursor-pointer"
                           >
@@ -270,7 +270,7 @@ export function AgentTable() {
                             className="cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleDeleteClick(agent.agent_id, agent.name)
+                              handleDeleteClick(agent.id, agent.name)
                             }}
                           >
                             <Trash2 className="h-4 w-4" />

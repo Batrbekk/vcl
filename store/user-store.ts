@@ -5,16 +5,23 @@ import { useAuthStore } from "./auth-store"
 
 type UserRole = 'admin' | 'manager'
 
+interface Company {
+  id: string
+  name: string
+  slug: string
+}
+
 interface User {
-  _id: string
+  id: string
   email: string
   firstName: string
   lastName: string
-  companyName: string
+  companyName: string // Deprecated: используйте company.name
   isVerified: boolean
   role: UserRole
   createdAt: string
   updatedAt: string
+  company: Company
 }
 
 interface UpdateProfileData {
@@ -62,7 +69,12 @@ export const useUserStore = create<UserState>()(
 
           switch (response.status) {
             case 200:
-              set({ user: result })
+              // Обеспечиваем обратную совместимость с companyName
+              const userData = {
+                ...result,
+                companyName: result.company?.name || result.companyName || ""
+              }
+              set({ user: userData })
               break
             case 401:
               toast.error("Ошибка авторизации")

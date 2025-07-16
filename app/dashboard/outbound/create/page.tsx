@@ -363,9 +363,9 @@ export default function CreateBatchCallPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {agents.map((agent) => (
-                    <SelectItem key={agent.agent_id} value={agent.agent_id}>
-                      {agent.name}
-                    </SelectItem>
+                                            <SelectItem key={agent.id} value={agent.id}>
+                          {agent.name}
+                        </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

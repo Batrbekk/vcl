@@ -13,7 +13,7 @@ export default function ManagersPage() {
   }, [fetchManagers])
 
   const handleEdit = async (manager: Manager) => {
-    await updateManager(manager._id, manager)
+    await updateManager(manager.id, manager)
   }
 
   const handleDelete = async (id: string) => {

@@ -7,6 +7,7 @@ import { ConversationFilters } from "./components/conversation-filters";
 import { PageHeader } from "@/components/page-header";
 import { ConversationSheet } from "@/components/dashboard/conversation-sheet";
 import { Loader2, MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -24,7 +25,9 @@ export default function HistoryPage() {
     isLoading,
     currentConversation,
     setFilters,
-    clearFilters
+    clearFilters,
+    loadMore,
+    hasMore
   } = useConversations();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -68,7 +71,11 @@ export default function HistoryPage() {
     setCurrentPage(1);
   };
 
-  // Пагинация на фронте
+  const handleLoadMore = async () => {
+    await loadMore();
+  };
+
+  // Клиентская пагинация для загруженных данных
   const totalItems = conversations.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -78,6 +85,10 @@ export default function HistoryPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
+  // Проверяем, находимся ли мы на последней странице загруженных данных
+  const isOnLastPage = currentPage === totalPages;
+  const shouldShowLoadMore = hasMore && isOnLastPage && totalItems > 0;
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -112,51 +123,75 @@ export default function HistoryPage() {
             onRowClick={handleRowClick}
           />
           
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-6">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage > 1) handlePageChange(currentPage - 1);
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
+          <div className="flex flex-col gap-4">
+            {/* Обычная пагинация */}
+            {totalPages > 1 && (
+              <div className="flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
                         href="#"
                         onClick={(e) => {
                           e.preventDefault();
-                          handlePageChange(page);
+                          if (currentPage > 1) handlePageChange(currentPage - 1);
                         }}
-                        isActive={currentPage === page}
-                        className="cursor-pointer"
-                      >
-                        {page}
-                      </PaginationLink>
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
                     </PaginationItem>
-                  ))}
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (currentPage < totalPages) handlePageChange(currentPage + 1);
-                      }}
-                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </div>
-          )}
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(page);
+                          }}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                        }}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+
+            {/* Кнопка "Загрузить ещё" появляется только на последней странице */}
+            {shouldShowLoadMore && (
+              <div className="flex justify-center">
+                <Button 
+                  onClick={handleLoadMore} 
+                  disabled={isLoading}
+                  variant="outline"
+                  className="min-w-40"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Загрузка...
+                    </>
+                  ) : (
+                    'Загрузить ещё'
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         </>
       )}
 

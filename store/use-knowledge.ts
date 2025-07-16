@@ -32,11 +32,23 @@ export interface KnowledgeDocument {
 }
 
 export interface KnowledgeResponse {
-  message: string
-  documents: KnowledgeDocument[]
-  next_cursor: string | null
-  has_more: boolean
-  retrieved_at: string
+  success: boolean
+  data: {
+    documents: KnowledgeDocument[]
+    next_cursor: string | null
+    has_more: boolean
+  }
+}
+
+export interface KnowledgeDocumentResponse {
+  success: boolean
+  data: KnowledgeDocument
+}
+
+// Новая структура ответа от API для ragIndex
+export interface RagIndexApiResponse {
+  success: boolean
+  data: RagIndexInfo
 }
 
 export interface RagIndexModel {
@@ -53,7 +65,7 @@ export interface RagIndexInfo {
 interface KnowledgeStore {
   documents: KnowledgeDocument[]
   currentDocument?: KnowledgeDocument
-  ragIndex: RagIndexInfo | null
+  ragIndex: RagIndexApiResponse | null
   isLoading: boolean
   error: string | null
   fetchDocuments: () => Promise<void>
@@ -102,7 +114,12 @@ export const useKnowledge = create<KnowledgeStore>((set) => ({
       }
 
       const data: KnowledgeResponse = await response.json()
-      set({ documents: data.documents || [], isLoading: false })
+      
+      if (!data.success) {
+        throw new Error('Ошибка в ответе сервера')
+      }
+      
+      set({ documents: data.data.documents || [], isLoading: false })
     } catch (error) {
       const errorMessage = handleApiError(error)
       set({ error: errorMessage, isLoading: false })
@@ -129,9 +146,14 @@ export const useKnowledge = create<KnowledgeStore>((set) => ({
         throw new Error('Ошибка при получении документа')
       }
 
-      const document: KnowledgeDocument = await response.json()
-      set({ currentDocument: document })
-      return document
+      const data: KnowledgeDocumentResponse = await response.json()
+      
+      if (!data.success) {
+        throw new Error('Ошибка в ответе сервера')
+      }
+      
+      set({ currentDocument: data.data })
+      return data.data
     } catch (error) {
       const errorMessage = handleApiError(error)
       toast.error(errorMessage)
@@ -158,7 +180,7 @@ export const useKnowledge = create<KnowledgeStore>((set) => ({
         throw new Error('Ошибка при получении информации о RAG индексе')
       }
 
-      const data: RagIndexInfo = await response.json()
+      const data: RagIndexApiResponse = await response.json()
       set({ ragIndex: data })
     } catch (error) {
       const errorMessage = handleApiError(error)

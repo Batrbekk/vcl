@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useAgentStore, type AgentDetails, type LLMPrice, type KnowledgeBaseDocument } from "@/store/agent-store"
 import { Search, Trash2, Globe, FileText, ExternalLink } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -43,18 +43,56 @@ const TEMPERATURE_PRESETS = [
 export function AgentTab({ agent, onUpdate }: AgentTabProps) {
   const router = useRouter()
   const { fetchLLMPrices, fetchKnowledgeBase } = useAgentStore()
+  
+  // Создаем дефолтные значения для conversation_config если их нет
+  const getConversationConfig = () => {
+    if (!agent.conversation_config) {
+      return {
+        asr: { quality: "high", provider: "default", user_input_audio_format: "wav", keywords: [] },
+        turn: { turn_timeout: 30, silence_end_call_timeout: 10, mode: "auto" },
+        tts: { 
+          model_id: "default", voice_id: "default", supported_voices: [], 
+          agent_output_audio_format: "wav", optimize_streaming_latency: 1,
+          stability: 0.5, speed: 1, similarity_boost: 0.5, pronunciation_dictionary_locators: []
+        },
+        conversation: { text_only: false, max_duration_seconds: 600, client_events: [] },
+        language_presets: {},
+        agent: {
+          first_message: agent.greetingTemplate || "Hello! How can I help you today?",
+          language: agent.language || "ru",
+          dynamic_variables: { dynamic_variable_placeholders: {} },
+          prompt: {
+            prompt: agent.aiContextPrompt || "You are a helpful assistant.",
+            llm: agent.aiModel || "gpt-3.5-turbo",
+            temperature: 0.5,
+            max_tokens: 1000,
+            tools: [],
+            tool_ids: [],
+            mcp_server_ids: [],
+            native_mcp_server_ids: [],
+            knowledge_base: [],
+            custom_llm: null,
+            ignore_default_personality: false,
+            rag: { enabled: false, embedding_model: "default", max_vector_distance: 0.5, max_documents_length: 1000, max_retrieved_rag_chunks_count: 10 }
+          }
+        }
+      }
+    }
+    return agent.conversation_config
+  }
   const [agentName, setAgentName] = useState(agent.name)
-  const [language, setLanguage] = useState(agent.conversation_config.agent.language)
-  const [firstMessage, setFirstMessage] = useState(agent.conversation_config.agent.first_message)
-  const [systemPrompt, setSystemPrompt] = useState(agent.conversation_config.agent.prompt.prompt)
-  const [selectedLLM, setSelectedLLM] = useState(agent.conversation_config.agent.prompt.llm)
-  const [temperature, setTemperature] = useState(agent.conversation_config.agent.prompt.temperature || 0.5)
+  const [language, setLanguage] = useState(agent.language || 'ru')
+  const [firstMessage, setFirstMessage] = useState(agent.greetingTemplate || 'Hello! How can I help you today?')
+  const [systemPrompt, setSystemPrompt] = useState(agent.aiContextPrompt || 'You are a helpful assistant.')
+  const [selectedLLM, setSelectedLLM] = useState(agent.aiModel || 'gpt-3.5-turbo')
+  const [temperature, setTemperature] = useState(0.5)
   const [llmOptions, setLLMOptions] = useState<LLMPrice[]>([])
   const [isLoadingLLM, setIsLoadingLLM] = useState(false)
   
   // Knowledge Base states
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>(() => {
-    const knowledgeBase = agent.conversation_config.agent.prompt.knowledge_base || []
+    const config = getConversationConfig()
+    const knowledgeBase = config.agent?.prompt?.knowledge_base || []
     // Если это массив объектов с id, извлекаем ID
     if (knowledgeBase.length > 0 && typeof knowledgeBase[0] === 'object' && knowledgeBase[0] !== null) {
       const firstItem = knowledgeBase[0] as unknown
@@ -65,33 +103,54 @@ export function AgentTab({ agent, onUpdate }: AgentTabProps) {
     // Если это массив строк, возвращаем как есть
     return knowledgeBase as string[]
   })
-  const [useRAG, setUseRAG] = useState(agent.conversation_config.agent.prompt.rag.enabled || false)
+  const [useRAG, setUseRAG] = useState(() => {
+    const config = getConversationConfig()
+    return config.agent?.prompt?.rag?.enabled || false
+  })
   const [availableDocuments, setAvailableDocuments] = useState<KnowledgeBaseDocument[]>([])
   const [isLoadingKnowledge, setIsLoadingKnowledge] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const isInitializedRef = useRef(false)
 
   useEffect(() => {
     const loadLLMOptions = async () => {
+      if (!agent.id) return
+      
       setIsLoadingLLM(true)
-      const llmPrices = await fetchLLMPrices(agent.agent_id)
+      const llmPrices = await fetchLLMPrices(agent.id)
       setLLMOptions(llmPrices)
       setIsLoadingLLM(false)
     }
     loadLLMOptions()
-  }, [agent.agent_id, fetchLLMPrices])
+  }, [agent.id, fetchLLMPrices])
 
   useEffect(() => {
     const loadKnowledgeBase = async () => {
       setIsLoadingKnowledge(true)
       const documents = await fetchKnowledgeBase()
       setAvailableDocuments(documents)
+      
+      // Проверяем, есть ли документы, связанные с текущим агентом
+      // Делаем это только один раз при инициализации
+      if (!isInitializedRef.current) {
+        const agentDocuments = documents.filter(doc => 
+          doc.dependent_agents.some(depAgent => depAgent.id === agent.id)
+        ).map(doc => doc.id)
+        
+        // Если найдены связанные документы и selectedDocuments пуст, обновляем
+        if (agentDocuments.length > 0 && selectedDocuments.length === 0) {
+          setSelectedDocuments(agentDocuments)
+        }
+        isInitializedRef.current = true
+      }
+      
       setIsLoadingKnowledge(false)
     }
     loadKnowledgeBase()
-  }, [fetchKnowledgeBase])
+  }, [fetchKnowledgeBase, agent.id, selectedDocuments.length])
 
-  const filteredDocuments = availableDocuments
+  const filteredDocuments = (availableDocuments || [])
     .filter(doc => !selectedDocuments.includes(doc.id))
     .filter(doc => 
       searchQuery === "" || 
@@ -99,7 +158,7 @@ export function AgentTab({ agent, onUpdate }: AgentTabProps) {
     )
 
   const getSelectedDocumentsByIds = (ids: string[]) => {
-    return availableDocuments.filter(doc => ids.includes(doc.id))
+    return (availableDocuments || []).filter(doc => ids.includes(doc.id))
   }
 
   const handleAddDocument = (documentId: string) => {
@@ -107,13 +166,14 @@ export function AgentTab({ agent, onUpdate }: AgentTabProps) {
     setSelectedDocuments(newDocuments)
     setIsDialogOpen(false)
     setSearchQuery("")
+    const config = getConversationConfig()
     onUpdate?.({
       conversation_config: {
-        ...agent.conversation_config,
+        ...config,
         agent: {
-          ...agent.conversation_config.agent,
+          ...config.agent,
           prompt: {
-            ...agent.conversation_config.agent.prompt,
+            ...config.agent?.prompt,
             knowledge_base: newDocuments.map(docId => {
               const doc = availableDocuments.find(d => d.id === docId)
               return doc ? { 

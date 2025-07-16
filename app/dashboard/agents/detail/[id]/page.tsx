@@ -36,7 +36,7 @@ import { toast } from "sonner"
 export default function AgentDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { fetchAgent, deleteAgent, updateAgentDetails } = useAgentStore()
+  const { fetchAgent, deleteAgent, updateAgentPartial } = useAgentStore()
   const [agent, setAgent] = useState<AgentDetails | null>(null)
   const [originalAgent, setOriginalAgent] = useState<AgentDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -79,11 +79,12 @@ export default function AgentDetailPage() {
 
   // Сохранение изменений
   const handleSaveChanges = async () => {
-    if (!agent || !hasChanges) return
+    if (!agent || !originalAgent || !hasChanges) return
     
     setIsSaving(true)
     try {
-      const updatedAgent = await updateAgentDetails(agent.agent_id, agent)
+      // Используем новую функцию для частичного обновления
+      const updatedAgent = await updateAgentPartial(agent.id, originalAgent, agent)
       if (updatedAgent) {
         setOriginalAgent(updatedAgent)
         setAgent(updatedAgent)
@@ -103,14 +104,14 @@ export default function AgentDetailPage() {
   const handleDeleteAgent = async () => {
     if (!agent) return
     
-    await deleteAgent(agent.agent_id)
+    await deleteAgent(agent.id)
     setDeleteDialogOpen(false)
     router.push('/dashboard/agents')
   }
 
   const handleTestAgent = () => {
     if (!agent) return
-    router.push(`/dashboard/agents/${agent.agent_id}`)
+    router.push(`/dashboard/agents/${agent.id}`)
   }
 
   const handleCopyId = async (id: string) => {
@@ -174,10 +175,10 @@ export default function AgentDetailPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleCopyId(agent.agent_id)}
+                      onClick={() => handleCopyId(agent.id)}
                       className="h-7 px-2 font-mono text-sm cursor-pointer hover:bg-muted"
                     >
-                      {agent.agent_id}
+                      {agent.id}
                       <Copy className="h-3 w-3 ml-1" />
                     </Button>
                   </TooltipTrigger>

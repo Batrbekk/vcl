@@ -167,9 +167,9 @@ export function ConversationFilters({ onFiltersChange, onClearFilters }: Convers
             <SelectContent>
               <SelectItem value="all">Все агенты</SelectItem>
               {agents.map((agent) => (
-                <SelectItem key={agent.agent_id} value={agent.agent_id}>
-                  {agent.name}
-                </SelectItem>
+                                        <SelectItem key={agent.id} value={agent.id}>
+                          {agent.name}
+                        </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -209,7 +209,7 @@ export function ConversationFilters({ onFiltersChange, onClearFilters }: Convers
           )}
           {agentId && (
             <Badge variant="secondary" className="gap-1">
-              Агент: {agents.find(a => a.agent_id === agentId)?.name}
+                              Агент: {agents.find(a => a.id === agentId)?.name}
               <button
                 onClick={() => handleAgentChange("all")}
                 className="ml-1 hover:bg-muted rounded-full p-0.5"

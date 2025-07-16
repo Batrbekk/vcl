@@ -42,10 +42,13 @@ const twilioSchema = z.object({
 const sipTrunkSchema = z.object({
   label: z.string().min(1, "Название номера обязательно").min(2, "Название должно содержать минимум 2 символа"),
   phoneNumber: z.string().min(1, "Номер телефона обязателен").regex(/^\+\d{10,15}$/, "Номер телефона должен начинаться с + и содержать от 10 до 15 цифр"),
-  terminationUri: z.string().min(1, "URI завершения обязателен").regex(/^sip:.+/, "URI должен начинаться с sip:"),
+  address: z.string().min(1, "Адрес обязателен"),
+  originationUri: z.enum([
+    "sip:sip.rtc.elevenlabs.io:5060;transport=tcp",
+    "sip:sip.rtc.elevenlabs.io:5061;transport=tls"
+  ]),
   transport: z.enum(["tls", "tcp", "udp", "auto"]),
   mediaEncryption: z.enum(["allowed", "disabled", "required"]),
-  address: z.string().default(""),
   username: z.string().default(""),
   password: z.string().default(""),
   headers: z.array(z.object({
@@ -78,10 +81,10 @@ export function ImportPhoneNumberDialog() {
     defaultValues: {
       label: "",
       phoneNumber: "",
-      terminationUri: "",
+      address: "",
+      originationUri: "sip:sip.rtc.elevenlabs.io:5060;transport=tcp" as const,
       transport: "tcp" as const,
       mediaEncryption: "allowed" as const,
-      address: "",
       username: "",
       password: "",
       headers: [] as Array<{ key: string; value: string }>
@@ -111,7 +114,7 @@ export function ImportPhoneNumberDialog() {
     
     try {
       const result = await createTwilioPhoneNumber({
-        phone_number: data.phoneNumber,
+        phoneNumber: data.phoneNumber,
         label: data.label,
         sid: data.accountSid,
         token: data.authToken
@@ -142,16 +145,16 @@ export function ImportPhoneNumberDialog() {
       }, {} as Record<string, string>) || {}
 
       const result = await createSipTrunkPhoneNumber({
-        phone_number: data.phoneNumber,
+        phoneNumber: data.phoneNumber,
         label: data.label,
-        termination_uri: data.terminationUri,
+        address: data.address,
+        origination_uri: data.originationUri,
         credentials: {
           username: data.username,
           password: data.password
         },
         media_encryption: data.mediaEncryption,
         headers: headersObject,
-        address: data.address || "",
         transport: data.transport
       })
 
@@ -381,18 +384,45 @@ export function ImportPhoneNumberDialog() {
 
                 <FormField
                   control={sipTrunkForm.control}
-                  name="terminationUri"
+                  name="address"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <Label className="text-sm font-medium text-gray-700">
-                        URI завершения
+                        Адрес
                       </Label>
                       <FormControl>
                         <Input
-                          placeholder="sip:username@domain.com"
-                          className="h-11 font-mono"
+                          placeholder=""
+                          className="h-11"
                           {...field}
                         />
+                      </FormControl>
+                      <p className="text-xs text-gray-500 px-1">
+                        Имя хоста или IP-адрес, на который отправляется SIP INVITE. Это не SIP URI и не должно содержать протокол sip:
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={sipTrunkForm.control}
+                  name="originationUri"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <Label className="text-sm font-medium text-gray-700">
+                        URI исходящих вызовов
+                      </Label>
+                      <FormControl>
+                        <Select value={field.value} onValueChange={field.onChange} defaultValue="sip:sip.rtc.elevenlabs.io:5060;transport=tcp">
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Выберите URI исходящих вызовов" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sip:sip.rtc.elevenlabs.io:5060;transport=tcp">sip:sip.rtc.elevenlabs.io:5060;transport=tcp</SelectItem>
+                            <SelectItem value="sip:sip.rtc.elevenlabs.io:5061;transport=tls">sip:sip.rtc.elevenlabs.io:5061;transport=tls</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -409,29 +439,6 @@ export function ImportPhoneNumberDialog() {
                       Настройте, куда должен отправлять вызовы для вашего номера телефона
                     </p>
                   </div>
-
-                  <FormField
-                    control={sipTrunkForm.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <Label className="text-sm font-medium text-gray-700">
-                          Адрес
-                        </Label>
-                        <FormControl>
-                          <Input
-                            placeholder=""
-                            className="h-11"
-                            {...field}
-                          />
-                        </FormControl>
-                        <p className="text-xs text-gray-500 px-1">
-                          Имя хоста или IP-адрес, на который отправляется SIP INVITE. Это не SIP URI и не должно содержать протокол sip:
-                        </p>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
 
                   <FormField
                     control={sipTrunkForm.control}

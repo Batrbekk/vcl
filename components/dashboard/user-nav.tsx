@@ -37,7 +37,7 @@ export function UserNav() {
               {user ? `${user.firstName} ${user.lastName}` : "Загрузка..."}
             </span>
             <span className="text-xs text-muted-foreground">
-              {user?.companyName || "Компания"}
+              {user?.company?.name || user?.companyName || "Компания"}
             </span>
           </div>
         </button>

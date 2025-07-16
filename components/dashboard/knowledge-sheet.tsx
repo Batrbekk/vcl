@@ -116,9 +116,11 @@ export function KnowledgeSheet({
                 <div>
                   <h4 className="text-sm font-medium mb-1">Последнее обновление</h4>
                   <p className="text-sm text-muted-foreground">
-                    {format(new Date(currentDocument.metadata.last_updated_at_unix_secs * 1000), "d MMM y 'г.', HH:mm", {
-                      locale: ru,
-                    })}
+                    {currentDocument.metadata?.last_updated_at_unix_secs ? 
+                      format(new Date(currentDocument.metadata.last_updated_at_unix_secs * 1000), "d MMM y 'г.', HH:mm", {
+                        locale: ru,
+                      }) : 'Дата недоступна'
+                    }
                   </p>
                 </div>
               </div>
@@ -127,7 +129,7 @@ export function KnowledgeSheet({
               <div className="mb-6">
                 <h4 className="text-sm font-medium mb-2">Размер</h4>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>{formatFileSize(currentDocument.metadata.size_bytes)}</span>
+                  <span>{currentDocument.metadata?.size_bytes ? formatFileSize(currentDocument.metadata.size_bytes) : 'Размер недоступен'}</span>
                 </div>
               </div>
 

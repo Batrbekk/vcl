@@ -158,9 +158,9 @@ export function PhoneNumbersTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              paginatedPhoneNumbers.map((phoneNumber) => (
+              paginatedPhoneNumbers.map((phoneNumber, index) => (
                 <TableRow 
-                  key={phoneNumber.phone_number_id} 
+                  key={phoneNumber?.phone_number_id || `phone-${index}`} 
                   className="hover:bg-muted/50 cursor-pointer"
                   onClick={() => handleRowClick(phoneNumber.phone_number_id)}
                 >

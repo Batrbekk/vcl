@@ -148,7 +148,7 @@ export const ManagerTable: FC<ManagerTableProps> = ({ onEdit, onDelete }) => {
               </TableRow>
             ) : (
               paginatedManagers.map((manager) => (
-                <TableRow key={manager._id}>
+                <TableRow key={manager.id}>
                   <TableCell className="px-6">{manager.firstName || ''}</TableCell>
                   <TableCell className="px-6">{manager.lastName || ''}</TableCell>
                   <TableCell className="px-6">{manager.email || ''}</TableCell>
@@ -160,7 +160,7 @@ export const ManagerTable: FC<ManagerTableProps> = ({ onEdit, onDelete }) => {
                         onEdit={onEdit}
                       />
                       <DeleteManagerDialog 
-                        onConfirm={() => onDelete(manager._id)}
+                        onConfirm={() => onDelete(manager.id)}
                       />
                     </div>
                   </TableCell>

@@ -3,16 +3,14 @@ import { toast } from 'sonner'
 import { useAuthStore } from './auth-store'
 
 export interface Manager {
-  _id: string
+  id: string
   email: string
   firstName: string
   lastName: string
   companyName: string
   role: string
-  adminId: string
   createdAt: string
   updatedAt: string
-  __v: number
 }
 
 export interface CreateManagerData {
@@ -52,8 +50,8 @@ export const useManagerStore = create<ManagerStore>((set) => ({
         throw new Error('Ошибка при получении списка менеджеров')
       }
       
-      const managers = await response.json()
-      set({ managers })
+      const result = await response.json()
+      set({ managers: result.data || [] })
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ошибка при получении списка менеджеров')
     } finally {

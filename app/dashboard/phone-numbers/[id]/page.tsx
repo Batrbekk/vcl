@@ -306,7 +306,7 @@ export default function PhoneNumberDetailPage() {
                   <SelectContent>
                     <SelectItem value="no-agent">Нет агента</SelectItem>
                     {agents.map((agent) => (
-                      <SelectItem key={agent.agent_id} value={agent.agent_id}>
+                      <SelectItem key={agent.id} value={agent.id}>
                         {agent.name}
                       </SelectItem>
                     ))}
@@ -456,7 +456,7 @@ export default function PhoneNumberDetailPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {agents.map((agent) => (
-                    <SelectItem key={agent.agent_id} value={agent.agent_id}>
+                    <SelectItem key={agent.id} value={agent.id}>
                       {agent.name}
                     </SelectItem>
                   ))}

@@ -21,7 +21,7 @@ export function ProfileForm() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
-        companyName: user.companyName || "",
+        companyName: user.company?.name || user.companyName || "",
       })
     }
   }, [user])

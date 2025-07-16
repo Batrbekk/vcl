@@ -18,16 +18,20 @@ export function RagStorageInfo() {
     fetchRagIndex()
   }, [fetchRagIndex])
 
-  if (!ragIndex) {
+  if (!ragIndex || !ragIndex.data) {
     return null
   }
 
+  const { total_used_bytes, total_max_bytes } = ragIndex.data
+
   return (
-    <div className="flex items-center gap-2 text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2">
-      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-      <span>
-        RAG Storage: <span className="font-bold">{formatBytes(ragIndex.total_used_bytes)}</span> / {formatBytes(ragIndex.total_max_bytes)}
-      </span>
+    <div className="flex flex-col gap-2 text-sm text-gray-600 border border-gray-200 rounded-lg px-3 py-2">
+      <div className="flex items-center gap-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+        <span>
+          RAG Storage: <span className="font-bold">{formatBytes(total_used_bytes)}</span> / {formatBytes(total_max_bytes)}
+        </span>
+      </div>ya
     </div>
   )
 } 
