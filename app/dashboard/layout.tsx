@@ -12,7 +12,8 @@ import {
   BookOpen, 
   Bot, 
   Settings, 
-  HelpCircle
+  HelpCircle,
+  MessageCircle
 } from "lucide-react"
 import {
   Sidebar,
@@ -37,12 +38,14 @@ const sidebarItems = [
       {
         title: "Менеджера",
         href: "/dashboard/managers",
-        icon: Users
+        icon: Users,
+        adminOnly: true
       },
       {
         title: "Агенты",
         href: "/dashboard/agents",
-        icon: Bot
+        icon: Bot,
+        adminOnly: true
       },
       {
         title: "История звонков",
@@ -57,7 +60,13 @@ const sidebarItems = [
       {
         title: "Номера телефонов",
         href: "/dashboard/phone-numbers",
-        icon: Phone
+        icon: Phone,
+        adminOnly: true
+      },
+      {
+        title: "WhatsApp",
+        href: "/dashboard/whatsapp",
+        icon: MessageCircle
       }
     ]
   },
@@ -85,13 +94,25 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname()
   const token = useAuthStore((state) => state.token)
-  const fetchUser = useUserStore((state) => state.fetchUser)
+  const { user, fetchUser } = useUserStore()
 
   useEffect(() => {
     if (token) {
       fetchUser()
     }
   }, [token, fetchUser])
+
+  // Фильтруем пункты меню в зависимости от роли пользователя
+  const filteredSidebarItems = sidebarItems.map(group => ({
+    ...group,
+    items: group.items.filter(item => {
+      // Если пункт только для админа и пользователь не админ - скрываем
+      if (item.adminOnly && user?.role === 'manager') {
+        return false
+      }
+      return true
+    })
+  }))
 
   return (
     <SidebarProvider defaultOpen={true}>
@@ -105,7 +126,7 @@ export default function DashboardLayout({
           
           <SidebarContent className="px-4 py-2">
             <nav className="space-y-2">
-              {sidebarItems.map((group, groupIndex) => (
+              {filteredSidebarItems.map((group, groupIndex) => (
                 <div key={group.group} className="space-y-2">
                   {group.items.map((item) => {
                     const Icon = item.icon
@@ -125,7 +146,7 @@ export default function DashboardLayout({
                       </Link>
                     )
                   })}
-                  {groupIndex < sidebarItems.length - 1 && (
+                  {groupIndex < filteredSidebarItems.length - 1 && (
                     <div className="h-px bg-border my-2" />
                   )}
                 </div>

@@ -24,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { useConversations } from "@/store/use-conversations";
+import { useUserStore } from "@/store/user-store";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -71,6 +72,7 @@ const statusMap: Record<string, { label: string; className: string }> = {
 
 export function ConversationsTable({ conversations, onRowClick }: ConversationsTableProps) {
   const { deleteConversation } = useConversations();
+  const { user } = useUserStore();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
 
@@ -93,6 +95,8 @@ export function ConversationsTable({ conversations, onRowClick }: ConversationsT
     setConversationToDelete(null);
   };
 
+  const canDelete = user?.role === 'admin';
+
   return (
     <div className="border rounded-lg">
       <Table>
@@ -102,7 +106,7 @@ export function ConversationsTable({ conversations, onRowClick }: ConversationsT
             <TableHead>Дата</TableHead>
             <TableHead>Длительность</TableHead>
             <TableHead>Статус</TableHead>
-            <TableHead className="pr-6 text-right">Действия</TableHead>
+            {canDelete && <TableHead className="pr-6 text-right">Действия</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -129,26 +133,28 @@ export function ConversationsTable({ conversations, onRowClick }: ConversationsT
                   {statusMap[conversation.status]?.label || conversation.status}
                 </span>
               </TableCell>
-              <TableCell className="pr-6 text-right">
-                <div className="flex justify-end gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => handleDeleteClick(conversation.conversation_id, e)}
-                        className="cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Удалить</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Удалить разговор
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TableCell>
+              {canDelete && (
+                <TableCell className="pr-6 text-right">
+                  <div className="flex justify-end gap-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => handleDeleteClick(conversation.conversation_id, e)}
+                          className="cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Удалить</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Удалить разговор
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
