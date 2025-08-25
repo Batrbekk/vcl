@@ -664,7 +664,14 @@ export const useAgentStore = create<AgentStore>((set) => ({
       }
 
       const data = await response.json()
-      return data.signed_url
+      
+      // Извлекаем signed_url из вложенной структуры ответа
+      if (data.success && data.data && data.data.signed_url) {
+        return data.data.signed_url
+      }
+      
+      // Fallback для прямого доступа к signed_url
+      return data.signed_url || null
       
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Ошибка при получении signed URL для разговора')

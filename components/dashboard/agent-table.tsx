@@ -229,7 +229,7 @@ export function AgentTable() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleTestAgent(agent.id)
+                              handleTestAgent(agent.elevenLabsAgentId)
                             }}
                             className="cursor-pointer"
                           >

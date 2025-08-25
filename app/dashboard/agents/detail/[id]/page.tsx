@@ -111,7 +111,7 @@ export default function AgentDetailPage() {
 
   const handleTestAgent = () => {
     if (!agent) return
-    router.push(`/dashboard/agents/${agent.id}`)
+    router.push(`/dashboard/agents/${agent.elevenLabsAgentId}`)
   }
 
   const handleCopyId = async (id: string) => {
