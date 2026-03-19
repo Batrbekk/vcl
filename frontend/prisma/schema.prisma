@@ -1,0 +1,287 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== ORGANIZATION ====================
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  industry  String?
+  phone     String?
+
+  // VAPI
+  vapiAssistantId String?
+
+  // Bot config
+  botName       String  @default("Алия")
+  botVoice      String  @default("cartesia:b7d50908-b17c-442d-ad8d-7c56e74dd5a3")
+  botPrompt     String  @default("")
+  botGreeting   String  @default("Здравствуйте! Вам удобно сейчас поговорить?")
+  botMaxRetries Int     @default(3)
+  botRetryInterval Int  @default(30) // minutes
+
+  // Subscription
+  plan          Plan     @default(TRIAL)
+  planStatus    PlanStatus @default(ACTIVE)
+  minutesUsed   Int      @default(0)
+  minutesLimit  Int      @default(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users      User[]
+  pipelines  Pipeline[]
+  leads      Lead[]
+  calls      Call[]
+  messages   Message[]
+}
+
+enum Plan {
+  TRIAL
+  BASIC
+  PREMIUM
+  MAX
+}
+
+enum PlanStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+// ==================== USER ====================
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           UserRole @default(MANAGER)
+  avatar         String?
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  assignedLeads  Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  MANAGER
+}
+
+// ==================== PIPELINE ====================
+model Pipeline {
+  id             String   @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  stages PipelineStage[]
+  leads  Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model PipelineStage {
+  id         String @id @default(cuid())
+  name       String
+  color      String @default("#6366f1")
+  order      Int
+  pipelineId String
+  pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+
+  leads Lead[]
+
+  @@index([pipelineId])
+  @@unique([pipelineId, order])
+}
+
+// ==================== LEAD ====================
+model Lead {
+  id             String     @id @default(cuid())
+  name           String
+  phone          String
+  email          String?
+  source         LeadSource @default(MANUAL)
+  status         LeadStatus @default(NEW)
+  tags           String[]
+  notes          String?
+  budget         String?
+  need           String?
+  timeline       String?
+  qualityScore   Int?       // 0-100
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  pipelineId     String
+  pipeline       Pipeline @relation(fields: [pipelineId], references: [id])
+
+  stageId        String
+  stage          PipelineStage @relation(fields: [stageId], references: [id])
+
+  assignedToId   String?
+  assignedTo     User? @relation(fields: [assignedToId], references: [id])
+
+  calls    Call[]
+  messages Message[]
+
+  lastContactAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([organizationId, stageId])
+  @@index([organizationId, status])
+}
+
+enum LeadSource {
+  WHATSAPP
+  INSTAGRAM
+  WEBSITE
+  MANUAL
+  PHONE
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  IN_PROGRESS
+  WON
+  LOST
+}
+
+// ==================== CALL ====================
+model Call {
+  id             String     @id @default(cuid())
+  direction      CallDirection
+  status         CallStatus @default(QUEUED)
+
+  vapiCallId     String?
+  telnyxCallId   String?
+  duration       Int        @default(0) // seconds
+  recordingUrl   String?
+
+  // AI analysis
+  summary        String?
+  sentiment      Sentiment?
+
+  // Qualification extracted from call
+  qualBudget     String?
+  qualNeed       String?
+  qualTimeline   String?
+  qualScore      Int?       // 0-100
+
+  retryCount     Int        @default(0)
+  scheduledAt    DateTime?
+  startedAt      DateTime?
+  endedAt        DateTime?
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  leadId         String
+  lead           Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  transcripts    Transcript[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([leadId])
+  @@index([vapiCallId])
+}
+
+enum CallDirection {
+  OUTBOUND
+  INBOUND
+}
+
+enum CallStatus {
+  QUEUED
+  RINGING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  NO_ANSWER
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
+
+// ==================== TRANSCRIPT ====================
+model Transcript {
+  id        String @id @default(cuid())
+  role      TranscriptRole
+  content   String
+  timestamp Float  // seconds from call start
+
+  callId    String
+  call      Call @relation(fields: [callId], references: [id], onDelete: Cascade)
+
+  @@index([callId])
+}
+
+enum TranscriptRole {
+  ASSISTANT
+  USER
+}
+
+// ==================== MESSAGE ====================
+model Message {
+  id          String         @id @default(cuid())
+  channel     MessageChannel
+  direction   MessageDirection
+  content     String
+  mediaUrl    String?
+  externalId  String?
+  status      MessageStatus  @default(SENT)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  leadId      String
+  lead        Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([leadId])
+}
+
+enum MessageChannel {
+  WHATSAPP
+  INSTAGRAM
+  SMS
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}

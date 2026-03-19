@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "shadcn": {
+      "command": "C:\\Program Files\\nodejs\\npx.cmd",
+      "args": ["shadcn@latest", "mcp"]
+    },
+    "figma-editor": {
+      "command": "node",
+      "args": ["C:\\Users\\User\\Desktop\\work\\claude-talk-to-figma-mcp\\dist\\talk_to_figma_mcp\\server.cjs"]
+    }
+  }
+}
