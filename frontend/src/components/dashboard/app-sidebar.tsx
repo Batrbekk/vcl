@@ -36,7 +36,7 @@ const navItems = [
 const settingsItems = [
   { title: "Интеграции", href: "/integrations", icon: Plug },
   { title: "Команда", href: "/team", icon: UserPlus },
-  { title: "Тарифы", href: "/billing", icon: CreditCard },
+  // { title: "Тарифы", href: "/billing", icon: CreditCard },
   { title: "Настройки", href: "/settings", icon: Settings },
 ];
 
