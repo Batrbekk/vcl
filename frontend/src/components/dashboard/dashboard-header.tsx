@@ -11,6 +11,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -20,7 +21,7 @@ const pageTitles: Record<string, string> = {
   "/": "Дашборд",
   "/leads": "Лиды",
   "/calls": "Звонки",
-  "/bot": "AI-бот",
+  "/bot": "AI-боты",
   "/integrations": "Интеграции",
   "/team": "Команда",
   "/billing": "Тарифы",
@@ -77,16 +78,18 @@ export function DashboardHeader({ session }: DashboardHeaderProps) {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" side="bottom" sideOffset={8}>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium text-zinc-200">
-                  {session.user?.name || "Пользователь"}
-                </p>
-                <p className="text-xs text-zinc-500">
-                  {session.user?.email || ""}
-                </p>
-              </div>
-            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium text-zinc-200">
+                    {session.user?.name || "Пользователь"}
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    {session.user?.email || ""}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {

@@ -1,12 +1,15 @@
 {
   "mcpServers": {
     "shadcn": {
-      "command": "C:\\Program Files\\nodejs\\npx.cmd",
+      "command": "npx",
       "args": ["shadcn@latest", "mcp"]
     },
-    "figma-editor": {
+    "superpowers": {
       "command": "node",
-      "args": ["C:\\Users\\User\\Desktop\\work\\claude-talk-to-figma-mcp\\dist\\talk_to_figma_mcp\\server.cjs"]
+      "args": ["/Users/batyrbekkuandyk/Desktop/vcl/superpowers-mcp/build/index.js"],
+      "env": {
+        "SUPERPOWERS_SKILLS_DIR": "/Users/batyrbekkuandyk/Desktop/vcl/superpowers-mcp/all-skills"
+      }
     }
   }
 }

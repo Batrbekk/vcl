@@ -14,6 +14,9 @@ export interface DemoLead {
   status: 'new' | 'qualified' | 'in_progress' | 'won' | 'lost';
   assignedTo: string | null;
   assignedToName: string | null;
+  assignedBotId?: string | null;
+  assignedBotName?: string | null;
+  channel?: 'PHONE' | 'WHATSAPP' | 'INSTAGRAM';
   tags: string[];
   notes: string;
   lastContactAt: string;

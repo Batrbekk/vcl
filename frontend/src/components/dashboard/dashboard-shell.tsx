@@ -17,11 +17,11 @@ interface DashboardShellProps {
 export function DashboardShell({ session, children }: DashboardShellProps) {
   return (
     <SessionProvider session={session}>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={true}>
         <AppSidebar session={session} />
-        <SidebarInset className="bg-zinc-950">
+        <SidebarInset className="bg-zinc-950 overflow-hidden min-w-0">
           <DashboardHeader session={session} />
-          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <div className="flex-1 overflow-auto p-6 min-h-0 min-w-0">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </SessionProvider>

@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
@@ -9,8 +8,9 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
 
+  // Middleware handles redirect, but just in case:
   if (!session?.user) {
-    redirect("/login");
+    return null;
   }
 
   return (

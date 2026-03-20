@@ -24,53 +24,20 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 
 const navItems = [
-  {
-    title: "Дашборд",
-    href: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Лиды",
-    href: "/leads",
-    icon: Users,
-  },
-  {
-    title: "Звонки",
-    href: "/calls",
-    icon: Phone,
-  },
-  {
-    title: "AI-бот",
-    href: "/bot",
-    icon: Bot,
-  },
+  { title: "Дашборд", href: "/", icon: LayoutDashboard },
+  { title: "Лиды", href: "/leads", icon: Users },
+  { title: "Звонки", href: "/calls", icon: Phone },
+  { title: "AI-боты", href: "/bot", icon: Bot },
 ];
 
 const settingsItems = [
-  {
-    title: "Интеграции",
-    href: "/integrations",
-    icon: Plug,
-  },
-  {
-    title: "Команда",
-    href: "/team",
-    icon: UserPlus,
-  },
-  {
-    title: "Тарифы",
-    href: "/billing",
-    icon: CreditCard,
-  },
-  {
-    title: "Настройки",
-    href: "/settings",
-    icon: Settings,
-  },
+  { title: "Интеграции", href: "/integrations", icon: Plug },
+  { title: "Команда", href: "/team", icon: UserPlus },
+  { title: "Тарифы", href: "/billing", icon: CreditCard },
+  { title: "Настройки", href: "/settings", icon: Settings },
 ];
 
 interface AppSidebarProps {
@@ -86,53 +53,28 @@ export function AppSidebar({ session }: AppSidebarProps) {
   }
 
   return (
-    <Sidebar className="border-zinc-800 bg-zinc-900">
-      <SidebarHeader className="px-4 py-5">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 2L2 7L12 12L22 7L12 2Z"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2 17L12 22L22 17"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2 12L12 17L22 12"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <span className="text-lg font-bold text-white">VOXI</span>
+    <Sidebar
+      collapsible="icon"
+      className="border-none bg-zinc-950 [&_[data-slot=sidebar-inner]]:rounded-r-2xl [&_[data-slot=sidebar-inner]]:bg-zinc-900/50"
+    >
+      {/* Logo */}
+      <SidebarHeader className="px-4 py-5 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+        <Link href="/" className="flex items-center gap-2.5">
+          <img src="/logo-icon.svg" alt="VOXI" className="h-7 w-7 shrink-0" />
+          <span className="text-lg font-bold text-white group-data-[collapsible=icon]:hidden">
+            VOXI
+          </span>
         </Link>
       </SidebarHeader>
 
-      <SidebarSeparator className="bg-zinc-800" />
-
-      <SidebarContent className="px-2">
+      <SidebarContent className="px-2 pt-2">
+        {/* Main nav */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+          <SidebarGroupLabel className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 group-data-[collapsible=icon]:hidden">
             Основное
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
@@ -140,12 +82,12 @@ export function AppSidebar({ session }: AppSidebarProps) {
                     tooltip={item.title}
                     className={
                       isActive(item.href)
-                        ? "bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 hover:text-indigo-300"
-                        : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                        ? "bg-indigo-600/15 text-indigo-400 hover:bg-indigo-600/20 hover:text-indigo-300"
+                        : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
                     }
                     render={<Link href={item.href} />}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 shrink-0" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -154,12 +96,13 @@ export function AppSidebar({ session }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+        {/* Settings nav */}
+        <SidebarGroup className="mt-4">
+          <SidebarGroupLabel className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 group-data-[collapsible=icon]:hidden">
             Управление
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {settingsItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
@@ -167,12 +110,12 @@ export function AppSidebar({ session }: AppSidebarProps) {
                     tooltip={item.title}
                     className={
                       isActive(item.href)
-                        ? "bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600/20 hover:text-indigo-300"
-                        : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+                        ? "bg-indigo-600/15 text-indigo-400 hover:bg-indigo-600/20 hover:text-indigo-300"
+                        : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-200"
                     }
                     render={<Link href={item.href} />}
                   >
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4 shrink-0" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -182,13 +125,13 @@ export function AppSidebar({ session }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-4 py-3">
-        <SidebarSeparator className="mb-3 bg-zinc-800" />
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-700 text-xs font-medium text-zinc-300">
+      {/* Footer — user */}
+      <SidebarFooter className="px-4 py-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
+        <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-medium text-white">
             {session.user?.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
-          <div className="flex flex-col overflow-hidden">
+          <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
             <span className="truncate text-sm font-medium text-zinc-200">
               {session.user?.name || "Пользователь"}
             </span>

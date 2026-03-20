@@ -40,6 +40,35 @@ model Organization {
   leads      Lead[]
   calls      Call[]
   messages   Message[]
+  bots       BotConfig[]
+}
+
+// ==================== BOT CONFIG ====================
+model BotConfig {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  prompt         String   @default("")
+  greeting       String   @default("Здравствуйте! Чем могу помочь?")
+  voiceId        String?  // Fish Audio reference_id
+  voiceName      String?  // Display name
+  maxRetries     Int      @default(3)
+  retryInterval  Int      @default(30)
+  isActive       Boolean  @default(true)
+  isDefault      Boolean  @default(false)
+
+  // VAPI
+  vapiAssistantId String?
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  assignedLeads  Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
 }
 
 enum Plan {
@@ -138,6 +167,13 @@ model Lead {
   assignedToId   String?
   assignedTo     User? @relation(fields: [assignedToId], references: [id])
 
+  // Bot assignment (either user OR bot, not both)
+  assignedBotId  String?
+  assignedBot    BotConfig? @relation(fields: [assignedBotId], references: [id])
+
+  // Preferred communication channel
+  channel        LeadChannel @default(PHONE)
+
   calls    Call[]
   messages Message[]
 
@@ -163,6 +199,12 @@ enum LeadStatus {
   IN_PROGRESS
   WON
   LOST
+}
+
+enum LeadChannel {
+  PHONE
+  WHATSAPP
+  INSTAGRAM
 }
 
 // ==================== CALL ====================
