@@ -21,6 +21,7 @@ const pageTitles: Record<string, string> = {
   "/": "Дашборд",
   "/leads": "Лиды",
   "/calls": "Звонки",
+  "/campaigns": "Обзвон",
   "/bot": "AI-боты",
   "/integrations": "Интеграции",
   "/team": "Команда",

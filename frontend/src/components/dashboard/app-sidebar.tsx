@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Users,
   Phone,
+  PhoneForwarded,
   Bot,
   Plug,
   UserPlus,
@@ -30,6 +31,7 @@ const navItems = [
   { title: "Дашборд", href: "/", icon: LayoutDashboard },
   { title: "Лиды", href: "/leads", icon: Users },
   { title: "Звонки", href: "/calls", icon: Phone },
+  { title: "Обзвон", href: "/campaigns", icon: PhoneForwarded },
   { title: "AI-боты", href: "/bot", icon: Bot },
 ];
 

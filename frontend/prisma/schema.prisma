@@ -41,6 +41,7 @@ model Organization {
   calls      Call[]
   messages   Message[]
   bots       BotConfig[]
+  campaigns  Campaign[]
 }
 
 // ==================== BOT CONFIG ====================
@@ -64,6 +65,7 @@ model BotConfig {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   assignedLeads  Lead[]
+  campaigns      Campaign[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -326,4 +328,61 @@ enum MessageStatus {
   DELIVERED
   READ
   FAILED
+}
+
+// ==================== CAMPAIGN ====================
+model Campaign {
+  id             String         @id @default(cuid())
+  name           String
+  description    String?
+  status         CampaignStatus @default(DRAFT)
+
+  botConfigId    String?
+  botConfig      BotConfig? @relation(fields: [botConfigId], references: [id])
+
+  totalContacts  Int      @default(0)
+  completedCalls Int      @default(0)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  contacts       CampaignContact[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model CampaignContact {
+  id         String                @id @default(cuid())
+  name       String?
+  phone      String
+  status     CampaignContactStatus @default(PENDING)
+  callId     String?
+  notes      String?
+
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  calledAt   DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([campaignId])
+}
+
+enum CampaignStatus {
+  DRAFT
+  RUNNING
+  PAUSED
+  COMPLETED
+}
+
+enum CampaignContactStatus {
+  PENDING
+  CALLING
+  COMPLETED
+  NO_ANSWER
+  FAILED
+  SKIPPED
 }
