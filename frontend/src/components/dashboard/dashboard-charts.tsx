@@ -48,6 +48,7 @@ export function CallsBarChart({ data }: { data: CallsByDayItem[] }) {
             color: "#fafafa",
             fontSize: 13,
           }}
+          itemStyle={{ color: "#fafafa" }}
           labelStyle={{ color: "#a1a1aa" }}
           cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
         />
@@ -106,6 +107,8 @@ export function LeadsSourcePieChart({ data }: { data: LeadsBySourceItem[] }) {
             color: "#fafafa",
             fontSize: 13,
           }}
+          itemStyle={{ color: "#fafafa" }}
+          labelStyle={{ color: "#a1a1aa" }}
           formatter={(value: number, name: string) => [`${value} лидов`, name]}
         />
       </PieChart>
