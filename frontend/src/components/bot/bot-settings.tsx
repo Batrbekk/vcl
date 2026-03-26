@@ -14,9 +14,10 @@ import { Switch } from "@/components/ui/switch";
 import {
   Bot, Save, Mic, Activity, Settings, FlaskConical,
   Sparkles, Clock, PhoneCall, TrendingUp, CheckCircle,
-  Copy, Zap, Volume2, AlertCircle,
+  Copy, Zap, Volume2, AlertCircle, PhoneOutgoing,
 } from "lucide-react";
 import { VoiceChat } from "@/components/bot/voice-chat";
+import { PhoneCallPanel } from "@/components/bot/phone-call";
 import { VoicePicker } from "@/components/bot/voice-picker";
 import { organizationData, callsData } from "@/data/seed";
 
@@ -124,6 +125,10 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
         <TabsTrigger value={2} className="text-zinc-400 data-active:text-white data-active:bg-zinc-800">
           <FlaskConical className="h-4 w-4" />
           Тестирование
+        </TabsTrigger>
+        <TabsTrigger value={3} className="text-zinc-400 data-active:text-white data-active:bg-zinc-800">
+          <PhoneOutgoing className="h-4 w-4" />
+          Звонок
         </TabsTrigger>
       </TabsList>
 
@@ -403,6 +408,11 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
             />
           </CardContent>
         </Card>
+      </TabsContent>
+
+      {/* ═══ Tab 4: Звонок ═══ */}
+      <TabsContent value={3} className="mt-4">
+        <PhoneCallPanel />
       </TabsContent>
     </Tabs>
   );
