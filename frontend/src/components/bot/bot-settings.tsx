@@ -260,47 +260,17 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
                   <p className="text-xs text-zinc-500">0.5 — медленно, 2.0 — быстро</p>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-zinc-300 text-sm">Громкость (dB)</Label>
+                  <Label className="text-zinc-300 text-sm">Объём (dB)</Label>
                   <Input
                     type="number"
-                    min={-10}
-                    max={10}
+                    min={-20}
+                    max={20}
                     step={1}
                     value={voiceVolume}
                     onChange={(e) => setVoiceVolume(Number(e.target.value))}
                     className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
                   />
-                  <p className="text-xs text-zinc-500">Корректировка громкости, от -10 до +10</p>
-                </div>
-              </div>
-
-              {/* Temperature + Top P row */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label className="text-zinc-300 text-sm">Выразительность</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={voiceTemperature}
-                    onChange={(e) => setVoiceTemperature(Number(e.target.value))}
-                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
-                  />
-                  <p className="text-xs text-zinc-500">0 — монотонно, 1 — максимум эмоций</p>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-zinc-300 text-sm">Разнообразие</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    value={voiceTopP}
-                    onChange={(e) => setVoiceTopP(Number(e.target.value))}
-                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
-                  />
-                  <p className="text-xs text-zinc-500">Top P — разнообразие генерации речи</p>
+                  <p className="text-xs text-zinc-500">Корректировка объёма, от -20 до +20 dB</p>
                 </div>
               </div>
 
