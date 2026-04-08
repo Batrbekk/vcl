@@ -220,11 +220,8 @@ export default function LoginPage() {
                 </Button>
               </form>
 
-              {/* Demo */}
-              <div className="mt-6 rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3 text-center dark:border-zinc-800 dark:bg-zinc-800/50">
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                  Демо: <span className="font-mono text-zinc-700 dark:text-zinc-300">almat@nurbolinvest.kz</span> / <span className="font-mono text-zinc-700 dark:text-zinc-300">demo123</span>
-                </p>
+              {/* Footer */}
+              <div className="mt-6">
               </div>
 
               <p className="mt-8 text-center text-xs text-zinc-400">
