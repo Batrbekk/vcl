@@ -285,7 +285,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── Charts Row ──────────────────────────────────────────── */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      {!usingDemoData && <div className="grid gap-4 lg:grid-cols-2">
         {/* Bar chart: Calls by day */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader>
@@ -320,10 +320,10 @@ export default async function DashboardPage() {
             <LeadsSourceLegend data={leadsBySource} />
           </CardContent>
         </Card>
-      </div>
+      </div>}
 
       {/* ── Funnel + Recent Activity ────────────────────────────── */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      {!usingDemoData && <div className="grid gap-4 lg:grid-cols-2">
         {/* Funnel chart */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader>
@@ -373,7 +373,7 @@ export default async function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div>}
     </div>
   );
 }
