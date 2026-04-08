@@ -25,7 +25,7 @@ import { Search, Plus, Users } from "lucide-react";
 type Stage = { id: string; name: string; order: number; color: string };
 
 export function KanbanBoard() {
-  const [leads, setLeads] = useState<DemoLead[]>(demoLeads);
+  const [leads, setLeads] = useState<DemoLead[]>([]);
   const [stages, setStages] = useState<Stage[]>(pipelineData.stages);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeId, setActiveId] = useState<string | null>(null);

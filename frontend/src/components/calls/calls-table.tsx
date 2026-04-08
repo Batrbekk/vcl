@@ -147,7 +147,7 @@ function computeCallStats(calls: DemoCall[]) {
 }
 
 export function CallsTable() {
-  const [calls, setCalls] = useState<DemoCall[]>(demoCalls);
+  const [calls, setCalls] = useState<DemoCall[]>([]);
   const [directionFilter, setDirectionFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedCall, setSelectedCall] = useState<DemoCall | null>(null);
