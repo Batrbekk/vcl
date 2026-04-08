@@ -53,7 +53,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const allowed = ['name', 'description', 'prompt', 'greeting', 'voiceId', 'voiceName', 'maxRetries', 'retryInterval', 'isActive'];
+    const allowed = ['name', 'description', 'prompt', 'greeting', 'voiceId', 'voiceName', 'maxRetries', 'retryInterval', 'isActive', 'voiceSpeed', 'voiceVolume', 'voiceTemperature', 'voiceTopP', 'voiceModel', 'voiceNormalize', 'voiceLoudnessNorm'];
     const data: any = {};
 
     for (const key of allowed) {

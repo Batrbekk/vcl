@@ -45,6 +45,16 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
   const [retryInterval, setRetryInterval] = useState(botConfig.retryInterval);
   const [vapiAssistantId, setVapiAssistantId] = useState(demoVapiAssistantId || "");
   const [botActive, setBotActive] = useState(true);
+
+  // Voice settings (Fish Audio)
+  const [voiceSpeed, setVoiceSpeed] = useState(1.0);
+  const [voiceVolume, setVoiceVolume] = useState(0);
+  const [voiceTemperature, setVoiceTemperature] = useState(0.7);
+  const [voiceTopP, setVoiceTopP] = useState(0.7);
+  const [voiceModel, setVoiceModel] = useState("s2-pro");
+  const [voiceNormalize, setVoiceNormalize] = useState(true);
+  const [voiceLoudnessNorm, setVoiceLoudnessNorm] = useState(true);
+
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -68,6 +78,14 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
         if (d.retryInterval !== undefined || d.botRetryInterval !== undefined) setRetryInterval(d.retryInterval ?? d.botRetryInterval);
         if (d.vapiAssistantId) setVapiAssistantId(d.vapiAssistantId);
         if (d.isActive !== undefined) setBotActive(d.isActive);
+        // Voice settings
+        if (d.voiceSpeed !== undefined) setVoiceSpeed(d.voiceSpeed);
+        if (d.voiceVolume !== undefined) setVoiceVolume(d.voiceVolume);
+        if (d.voiceTemperature !== undefined) setVoiceTemperature(d.voiceTemperature);
+        if (d.voiceTopP !== undefined) setVoiceTopP(d.voiceTopP);
+        if (d.voiceModel !== undefined) setVoiceModel(d.voiceModel);
+        if (d.voiceNormalize !== undefined) setVoiceNormalize(d.voiceNormalize);
+        if (d.voiceLoudnessNorm !== undefined) setVoiceLoudnessNorm(d.voiceLoudnessNorm);
       })
       .catch(() => {});
   }, [botId]);
@@ -76,8 +94,9 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
     setSaveError(null);
     try {
       const url = botId ? `/api/bots/${botId}` : "/api/bot";
+      const voiceSettings = { voiceSpeed, voiceVolume, voiceTemperature, voiceTopP, voiceModel, voiceNormalize, voiceLoudnessNorm };
       const body = botId
-        ? { name: botName, greeting, prompt, voiceId, voiceName: voiceDisplayName, maxRetries, retryInterval }
+        ? { name: botName, greeting, prompt, voiceId, voiceName: voiceDisplayName, maxRetries, retryInterval, ...voiceSettings }
         : { botName, botGreeting: greeting, botPrompt: prompt, botVoice: voiceId, botMaxRetries: maxRetries, botRetryInterval: retryInterval };
 
       const res = await fetch(url, {
@@ -203,6 +222,113 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
               <p className="text-xs text-zinc-500">
                 Выберите голос и нажмите ▶ для прослушивания. Голоса от Fish Audio с поддержкой эмоций.
               </p>
+            </div>
+
+            {/* Voice settings */}
+            <div className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-800/30 p-4">
+              <div className="flex items-center gap-2">
+                <Settings className="h-4 w-4 text-indigo-400" />
+                <Label className="text-zinc-200 font-medium">Настройки голоса</Label>
+              </div>
+
+              {/* TTS Model */}
+              <div className="space-y-2">
+                <Label className="text-zinc-300 text-sm">Модель TTS</Label>
+                <select
+                  value={voiceModel}
+                  onChange={(e) => setVoiceModel(e.target.value)}
+                  className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20"
+                >
+                  <option value="s2-pro">S2 Pro (рекомендуется)</option>
+                  <option value="s1">S1 (быстрый)</option>
+                </select>
+              </div>
+
+              {/* Speed + Volume row */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300 text-sm">Скорость</Label>
+                  <Input
+                    type="number"
+                    min={0.5}
+                    max={2.0}
+                    step={0.1}
+                    value={voiceSpeed}
+                    onChange={(e) => setVoiceSpeed(Number(e.target.value))}
+                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
+                  />
+                  <p className="text-xs text-zinc-500">0.5 — медленно, 2.0 — быстро</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300 text-sm">Громкость (dB)</Label>
+                  <Input
+                    type="number"
+                    min={-10}
+                    max={10}
+                    step={1}
+                    value={voiceVolume}
+                    onChange={(e) => setVoiceVolume(Number(e.target.value))}
+                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
+                  />
+                  <p className="text-xs text-zinc-500">Корректировка громкости, от -10 до +10</p>
+                </div>
+              </div>
+
+              {/* Temperature + Top P row */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-zinc-300 text-sm">Выразительность</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    value={voiceTemperature}
+                    onChange={(e) => setVoiceTemperature(Number(e.target.value))}
+                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
+                  />
+                  <p className="text-xs text-zinc-500">0 — монотонно, 1 — максимум эмоций</p>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-zinc-300 text-sm">Разнообразие</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    value={voiceTopP}
+                    onChange={(e) => setVoiceTopP(Number(e.target.value))}
+                    className="border-zinc-700 bg-zinc-800 text-white focus-visible:border-indigo-500 focus-visible:ring-indigo-500/20"
+                  />
+                  <p className="text-xs text-zinc-500">Top P — разнообразие генерации речи</p>
+                </div>
+              </div>
+
+              {/* Switches row */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-800/50 px-4 py-3">
+                  <div>
+                    <p className="text-sm text-zinc-300">Нормализация текста</p>
+                    <p className="text-xs text-zinc-500">Числа, даты, аббревиатуры</p>
+                  </div>
+                  <Switch
+                    checked={voiceNormalize}
+                    onCheckedChange={(val: boolean) => setVoiceNormalize(val)}
+                    className="data-checked:bg-indigo-600"
+                  />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-800/50 px-4 py-3">
+                  <div>
+                    <p className="text-sm text-zinc-300">Нормализация громкости</p>
+                    <p className="text-xs text-zinc-500">Выравнивание уровня звука</p>
+                  </div>
+                  <Switch
+                    checked={voiceLoudnessNorm}
+                    onCheckedChange={(val: boolean) => setVoiceLoudnessNorm(val)}
+                    className="data-checked:bg-indigo-600"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Retry settings */}

@@ -58,6 +58,15 @@ model BotConfig {
   isActive       Boolean  @default(true)
   isDefault      Boolean  @default(false)
 
+  // Voice settings (Fish Audio)
+  voiceSpeed        Float    @default(1.0)    // 0.5-2.0
+  voiceVolume       Float    @default(0)      // dB adjustment
+  voiceTemperature  Float    @default(0.7)    // 0-1 expressiveness
+  voiceTopP         Float    @default(0.7)    // 0-1 diversity
+  voiceModel        String   @default("s2-pro") // s1 or s2-pro
+  voiceNormalize    Boolean  @default(true)   // text normalization
+  voiceLoudnessNorm Boolean  @default(true)   // loudness normalization
+
   // VAPI
   vapiAssistantId String?
 
