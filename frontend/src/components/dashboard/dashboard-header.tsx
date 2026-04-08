@@ -6,6 +6,7 @@ import { type Session } from "next-auth";
 import { LogOut, User, ChevronDown } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { PushNotifications } from "@/components/ui/push-notifications";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -64,6 +65,8 @@ export function DashboardHeader({ session }: DashboardHeaderProps) {
         <span className="hidden text-sm text-zinc-400 md:block">
           {(session.user as any)?.organizationName || ""}
         </span>
+
+        <PushNotifications />
 
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg px-2 py-1.5 outline-none transition-colors hover:bg-zinc-800 focus-visible:ring-2 focus-visible:ring-zinc-600">

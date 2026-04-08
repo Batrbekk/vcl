@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { sendCallCompletedNotification } from '@/lib/email';
+import { sendPushToAll } from '@/lib/push';
 
 // POST — save a phone call from the telephony pipeline (no auth required — internal)
 export async function POST(request: Request) {
@@ -123,6 +124,21 @@ export async function POST(request: Request) {
         // Don't fail the call save if email fails
         console.error('Failed to send call notification email:', emailError);
       }
+    }
+
+    // Send push notification to all subscribed users
+    try {
+      const clientName = analysis?.clientName || 'Неизвестный клиент';
+      const score = analysis?.qualificationScore ? Number(analysis.qualificationScore) : 0;
+      await sendPushToAll({
+        title: 'Новый звонок завершён',
+        body: `${clientName} — оценка ${score}/100`,
+        url: '/calls',
+        tag: 'call-completed',
+      });
+    } catch (pushError) {
+      // Don't fail the call save if push fails
+      console.error('Failed to send push notification:', pushError);
     }
 
     return NextResponse.json({
