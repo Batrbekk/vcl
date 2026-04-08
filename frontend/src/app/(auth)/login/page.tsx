@@ -16,6 +16,33 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotResult, setForgotResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  async function handleForgotPassword() {
+    if (!forgotEmail.trim()) return;
+    setForgotLoading(true);
+    setForgotResult(null);
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setForgotResult({ success: true, message: "Письмо отправлено! Проверьте почту." });
+      } else {
+        setForgotResult({ success: false, message: data.error || "Ошибка" });
+      }
+    } catch {
+      setForgotResult({ success: false, message: "Не удалось отправить" });
+    } finally {
+      setForgotLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -171,9 +198,9 @@ export default function LoginPage() {
                     <Checkbox />
                     Запомнить меня
                   </label>
-                  <a href="#" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
+                  <button type="button" onClick={() => setForgotOpen(true)} className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
                     Забыли пароль?
-                  </a>
+                  </button>
                 </div>
 
                 {/* Sign In */}
@@ -207,6 +234,45 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Forgot password modal */}
+      {forgotOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setForgotOpen(false)}>
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-900 p-6" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-white mb-2">Сброс пароля</h3>
+            <p className="text-sm text-zinc-400 mb-4">Введите email и мы отправим ссылку для сброса пароля.</p>
+
+            {forgotResult && (
+              <div className={`mb-4 rounded-lg px-4 py-3 text-sm ${
+                forgotResult.success ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+              }`}>
+                {forgotResult.message}
+              </div>
+            )}
+
+            <input
+              type="email"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              placeholder="Введите email"
+              className="mb-4 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:border-indigo-500 focus:outline-none"
+              onKeyDown={(e) => e.key === "Enter" && handleForgotPassword()}
+            />
+            <div className="flex gap-3">
+              <button onClick={() => setForgotOpen(false)} className="flex-1 rounded-xl border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800">
+                Отмена
+              </button>
+              <button
+                onClick={handleForgotPassword}
+                disabled={forgotLoading || !forgotEmail.trim()}
+                className="flex-1 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              >
+                {forgotLoading ? "Отправка..." : "Отправить"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes drift {
