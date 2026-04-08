@@ -94,9 +94,6 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Не удалось сохранить";
       setSaveError(message);
-      // Still show saved for demo experience — settings are kept locally
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
       setTimeout(() => setSaveError(null), 5000);
     }
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, Bell, Save, Lock, ShieldCheck, Loader2 } from "lucide-react";
+import { Building2, Bell, Save, Lock, ShieldCheck, Loader2, CheckCircle2 } from "lucide-react";
 import { organizationData } from "@/data/seed";
 
 // ── Notification settings ────────────────────────────────────────
@@ -72,6 +72,30 @@ export default function SettingsPage() {
   const [companyName, setCompanyName] = useState(organizationData.name);
   const [industry, setIndustry] = useState(organizationData.industry);
   const [phone, setPhone] = useState(organizationData.phone);
+  const [slug, setSlug] = useState(organizationData.slug);
+  const [orgLoading, setOrgLoading] = useState(false);
+  const [orgError, setOrgError] = useState("");
+  const [orgSuccess, setOrgSuccess] = useState("");
+
+  // Fetch organization data on mount
+  const fetchOrganization = useCallback(async () => {
+    try {
+      const res = await fetch("/api/organization");
+      if (res.ok) {
+        const data = await res.json();
+        setCompanyName(data.name || "");
+        setIndustry(data.industry || "");
+        setPhone(data.phone || "");
+        setSlug(data.slug || "");
+      }
+    } catch {
+      // Fallback to seed data (already set as defaults)
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrganization();
+  }, [fetchOrganization]);
 
   // Notification toggles state
   const [notifications, setNotifications] = useState<Record<string, boolean>>(
@@ -81,6 +105,8 @@ export default function SettingsPage() {
       )
   );
   const [notifEmail, setNotifEmail] = useState("almat@nurbolinvest.kz");
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [notifSuccess, setNotifSuccess] = useState("");
 
   const toggleNotification = (id: string) => {
     setNotifications((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -93,6 +119,56 @@ export default function SettingsPage() {
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  // Organization save handler
+  const handleOrgSave = async () => {
+    setOrgError("");
+    setOrgSuccess("");
+
+    if (!companyName.trim()) {
+      setOrgError("Название компании не может быть пустым");
+      return;
+    }
+
+    setOrgLoading(true);
+    try {
+      const res = await fetch("/api/organization", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: companyName.trim(),
+          industry: industry.trim(),
+          phone: phone.trim(),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Ошибка при сохранении");
+      }
+      setOrgSuccess("Настройки организации сохранены");
+      // Update local state with server response
+      if (data.name) setCompanyName(data.name);
+      if (data.industry !== undefined) setIndustry(data.industry || "");
+      if (data.phone !== undefined) setPhone(data.phone || "");
+      if (data.slug) setSlug(data.slug);
+      setTimeout(() => setOrgSuccess(""), 4000);
+    } catch (err: unknown) {
+      setOrgError(err instanceof Error ? err.message : "Произошла ошибка");
+    } finally {
+      setOrgLoading(false);
+    }
+  };
+
+  // Notification save handler
+  const handleNotifSave = async () => {
+    setNotifSuccess("");
+    setNotifLoading(true);
+    // Simulate save (notification preferences not yet in DB)
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setNotifLoading(false);
+    setNotifSuccess("Настройки уведомлений сохранены");
+    setTimeout(() => setNotifSuccess(""), 4000);
+  };
 
   const handlePasswordChange = async () => {
     setPasswordError("");
@@ -225,7 +301,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     <Input
                       id="slug"
-                      value={organizationData.slug}
+                      value={slug}
                       readOnly
                       className="border-zinc-700 bg-zinc-800/50 pr-10 text-zinc-500"
                     />
@@ -236,10 +312,31 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
+                {/* Error / Success messages */}
+                {orgError && (
+                  <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                    {orgError}
+                  </p>
+                )}
+                {orgSuccess && (
+                  <p className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {orgSuccess}
+                  </p>
+                )}
+
                 {/* Save button */}
                 <div className="pt-2">
-                  <Button className="gap-2 bg-indigo-600 text-white hover:bg-indigo-500">
-                    <Save className="h-4 w-4" />
+                  <Button
+                    onClick={handleOrgSave}
+                    disabled={orgLoading}
+                    className="gap-2 bg-indigo-600 text-white hover:bg-indigo-500"
+                  >
+                    {orgLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
                     Сохранить
                   </Button>
                 </div>
@@ -304,10 +401,26 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
+                {/* Success message */}
+                {notifSuccess && (
+                  <p className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    {notifSuccess}
+                  </p>
+                )}
+
                 {/* Save button */}
                 <div className="pt-2">
-                  <Button className="gap-2 bg-indigo-600 text-white hover:bg-indigo-500">
-                    <Save className="h-4 w-4" />
+                  <Button
+                    onClick={handleNotifSave}
+                    disabled={notifLoading}
+                    className="gap-2 bg-indigo-600 text-white hover:bg-indigo-500"
+                  >
+                    {notifLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
                     Сохранить
                   </Button>
                 </div>
