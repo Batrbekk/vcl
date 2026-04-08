@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { sendCallCompletedNotification } from '@/lib/email';
 
 // POST — save a phone call from the telephony pipeline (no auth required — internal)
 export async function POST(request: Request) {
@@ -104,6 +105,24 @@ export async function POST(request: Request) {
           callId: call.id,
         })),
       });
+    }
+
+    // Send email notification to the org owner
+    const qualScore = analysis?.qualificationScore ? Number(analysis.qualificationScore) : 0;
+    if (qualScore > 0) {
+      try {
+        const owner = await prisma.user.findFirst({
+          where: { organizationId: org.id, role: 'OWNER' },
+        });
+        if (owner) {
+          const leadName = analysis?.clientName || 'Неизвестный клиент';
+          const summary = analysis?.summary || '';
+          await sendCallCompletedNotification(owner.email, leadName, qualScore, summary);
+        }
+      } catch (emailError) {
+        // Don't fail the call save if email fails
+        console.error('Failed to send call notification email:', emailError);
+      }
     }
 
     return NextResponse.json({

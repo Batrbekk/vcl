@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { CookieBanner } from "@/components/ui/cookie-banner";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-50 font-sans">
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
