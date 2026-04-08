@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AudioPlayer } from "@/components/ui/audio-player";
 import type { DemoCall } from "@/data/demo-calls";
 
 interface CallTranscriptDialogProps {
@@ -67,6 +68,16 @@ export function CallTranscriptDialog({
             {formatDate(call.startedAt)}
           </DialogDescription>
         </DialogHeader>
+
+        {/* Audio Recording */}
+        {call.recordingUrl && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+              Запись разговора
+            </h4>
+            <AudioPlayer src={call.recordingUrl} />
+          </div>
+        )}
 
         <ScrollArea className="max-h-[calc(85vh-120px)] pr-2">
           <div className="space-y-5">

@@ -31,6 +31,7 @@ export interface DemoCall {
   endedAt: string;
   transcript: DemoTranscriptEntry[];
   createdAt: string;
+  recordingUrl?: string;
 }
 
 export const demoCalls: DemoCall[] = [

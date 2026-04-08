@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { direction, duration, transcript, analysis, leadId } = body;
+    const { direction, duration, transcript, analysis, leadId, recordingUrl } = body;
 
     // Find the first organization (for now, single-tenant)
     const org = await prisma.organization.findFirst();
@@ -79,6 +79,7 @@ export async function POST(request: Request) {
         direction: direction === 'INBOUND' ? 'INBOUND' : 'OUTBOUND',
         status: 'COMPLETED',
         duration: duration || 0,
+        recordingUrl: recordingUrl || null,
         summary: analysis?.summary || null,
         sentiment: analysis?.sentiment === 'POSITIVE' ? 'POSITIVE' :
                    analysis?.sentiment === 'NEGATIVE' ? 'NEGATIVE' : 'NEUTRAL',

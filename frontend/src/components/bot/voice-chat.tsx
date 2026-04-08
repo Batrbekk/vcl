@@ -232,7 +232,25 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
               body: JSON.stringify({ transcript: msgs.map((t) => ({ role: t.role, content: t.text })) }),
             })
               .then((r) => r.json())
-              .then((d) => { if (d.analysis) setAnalysis(d.analysis); })
+              .then((d) => {
+                if (d.analysis) {
+                  setAnalysis(d.analysis);
+                  // Save call to database
+                  const callDuration = Math.floor((Date.now() - startTimeRef.current) / 1000);
+                  if (msgs.length >= 2) {
+                    fetch("/api/calls/save-phone-call", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        direction: "OUTBOUND",
+                        duration: callDuration,
+                        transcript: msgs.map((t) => ({ role: t.role, content: t.text })),
+                        analysis: d.analysis,
+                      }),
+                    }).catch(console.error);
+                  }
+                }
+              })
               .catch(console.error)
               .finally(() => setAnalyzing(false));
           }
@@ -354,11 +372,28 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
         }),
       })
         .then((res) => res.json())
-        .then((data) => { if (data.analysis) setAnalysis(data.analysis); })
+        .then((data) => {
+          if (data.analysis) {
+            setAnalysis(data.analysis);
+            // Save call to database
+            if (msgs.length >= 2) {
+              fetch("/api/calls/save-phone-call", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  direction: "OUTBOUND",
+                  duration: elapsed,
+                  transcript: msgs.map((t) => ({ role: t.role, content: t.text })),
+                  analysis: data.analysis,
+                }),
+              }).catch(console.error);
+            }
+          }
+        })
         .catch(console.error)
         .finally(() => setAnalyzing(false));
     }
-  }, []);
+  }, [elapsed]);
 
   const handleReset = useCallback(() => {
     setCallStatus("idle");

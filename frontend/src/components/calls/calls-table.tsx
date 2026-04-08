@@ -30,6 +30,7 @@ import {
   FileText,
   Timer,
 } from "lucide-react";
+import { AudioPlayer } from "@/components/ui/audio-player";
 import { demoCalls, type DemoCall } from "@/data/demo-calls";
 import { callStats as defaultCallStats } from "@/data/demo-stats";
 
@@ -190,6 +191,7 @@ export function CallsTable() {
             content: t.content,
             timestamp: t.timestamp || 0,
           })),
+          recordingUrl: c.recordingUrl || undefined,
         }));
         setCalls(mapped);
       })
@@ -349,6 +351,7 @@ export function CallsTable() {
                 <TableHead className="text-zinc-400">Sentiment</TableHead>
                 <TableHead className="text-zinc-400">Оценка</TableHead>
                 <TableHead className="text-zinc-400">Дата</TableHead>
+                <TableHead className="text-zinc-400">Запись</TableHead>
                 <TableHead className="text-zinc-400 text-right">
                   Действия
                 </TableHead>
@@ -433,6 +436,16 @@ export function CallsTable() {
                   <TableCell className="text-zinc-400 text-sm">
                     {formatDate(call.startedAt)}
                   </TableCell>
+                  <TableCell>
+                    {call.recordingUrl ? (
+                      <AudioPlayer
+                        src={call.recordingUrl}
+                        compact
+                      />
+                    ) : (
+                      <span className="text-zinc-600 text-xs">---</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
@@ -452,7 +465,7 @@ export function CallsTable() {
               {filteredCalls.length === 0 && (
                 <TableRow className="border-zinc-800">
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="text-center py-12 text-zinc-500"
                   >
                     Нет звонков по выбранным фильтрам
