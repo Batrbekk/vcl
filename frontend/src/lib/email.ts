@@ -29,7 +29,13 @@ function resetPasswordTemplate(name: string, resetLink: string): string {
           <!-- Header -->
           <tr>
             <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #27272a;">
-              <div style="display: inline-block; width: 40px; height: 40px; background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 10px; margin-bottom: 12px;"></div>
+              <table cellpadding="0" cellspacing="0" style="margin: 0 auto 12px;">
+                <tr>
+                  <td style="background-color: #6366f1; width: 40px; height: 40px; border-radius: 10px; text-align: center; vertical-align: middle;">
+                    <span style="color: #ffffff; font-size: 18px; font-weight: 800;">V</span>
+                  </td>
+                </tr>
+              </table>
               <h1 style="margin: 0; color: #fafafa; font-size: 22px; font-weight: 700;">VOXI</h1>
               <p style="margin: 4px 0 0; color: #71717a; font-size: 13px;">AI-платформа автоматизации продаж</p>
             </td>
