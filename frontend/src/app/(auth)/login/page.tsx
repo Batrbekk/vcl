@@ -237,7 +237,7 @@ export default function LoginPage() {
 
       {/* Forgot password modal */}
       {forgotOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setForgotOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => { setForgotOpen(false); setForgotEmail(""); setForgotResult(null); }}>
           <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-900 p-6" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-bold text-white mb-2">Сброс пароля</h3>
             <p className="text-sm text-zinc-400 mb-4">Введите email и мы отправим ссылку для сброса пароля.</p>
@@ -259,7 +259,7 @@ export default function LoginPage() {
               onKeyDown={(e) => e.key === "Enter" && handleForgotPassword()}
             />
             <div className="flex gap-3">
-              <button onClick={() => setForgotOpen(false)} className="flex-1 rounded-xl border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800">
+              <button onClick={() => { setForgotOpen(false); setForgotEmail(""); setForgotResult(null); }} className="flex-1 rounded-xl border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800">
                 Отмена
               </button>
               <button
