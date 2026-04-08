@@ -218,6 +218,7 @@ export default async function DashboardPage() {
 
   let dashboardKPIs: KPI[] = demoKPIs;
   let recentActivity: Activity[] = demoRecentActivity;
+  let usingDemoData = true;
 
   const isDemoUser = !organizationId || organizationId.startsWith("demo_");
 
@@ -226,6 +227,7 @@ export default async function DashboardPage() {
       const data = await fetchDashboardData(organizationId);
       dashboardKPIs = data.dashboardKPIs;
       recentActivity = data.recentActivity;
+      usingDemoData = false;
     } catch (error) {
       console.error("Dashboard DB query failed, using demo fallback:", error);
       // Keep demo data as fallback
@@ -234,6 +236,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {usingDemoData && (
+        <div className="rounded-lg bg-zinc-700 px-4 py-2 text-sm text-zinc-200 text-center">
+          Отображаются демо-данные
+        </div>
+      )}
       {/* ── Welcome Header ──────────────────────────────────────── */}
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-white">

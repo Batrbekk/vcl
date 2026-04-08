@@ -73,6 +73,7 @@ export function AddLeadDialog({
   const [tagsInput, setTagsInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
   const [bots, setBots] = useState<BotOption[]>([]);
   const [botsLoading, setBotsLoading] = useState(false);
 
@@ -110,6 +111,12 @@ export function AddLeadDialog({
     setNotes("");
     setTagsInput("");
     setError("");
+    setPhoneError("");
+  };
+
+  const validatePhone = (value: string): boolean => {
+    const digits = value.replace(/\D/g, "");
+    return digits.length >= 7;
   };
 
   const handleSubmit = async () => {
@@ -121,6 +128,11 @@ export function AddLeadDialog({
       setError("Телефон обязателен");
       return;
     }
+    if (!validatePhone(phone)) {
+      setPhoneError("Неверный формат телефона");
+      return;
+    }
+    setPhoneError("");
     if (!stageId) {
       setError("Выберите этап");
       return;
@@ -212,9 +224,15 @@ export function AddLeadDialog({
               id="lead-phone"
               placeholder="+7 7XX XXX XX XX"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                if (phoneError) setPhoneError("");
+              }}
               className="border-zinc-700 bg-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500"
             />
+            {phoneError && (
+              <p className="text-sm text-red-400">{phoneError}</p>
+            )}
           </div>
 
           {/* Email */}

@@ -32,6 +32,7 @@ export function KanbanBoard() {
   const [selectedLead, setSelectedLead] = useState<DemoLead | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [dragError, setDragError] = useState<string | null>(null);
   const [teamUsers, setTeamUsers] = useState<{ id: string; name: string }[]>([]);
   const [pipelineId, setPipelineId] = useState("");
 
@@ -192,6 +193,8 @@ export function KanbanBoard() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stageId: targetStageId }),
+      }).then((res) => {
+        if (!res.ok) throw new Error("PATCH failed");
       }).catch(() => {
         // Revert on failure
         setLeads((prev) =>
@@ -201,6 +204,8 @@ export function KanbanBoard() {
               : l
           )
         );
+        setDragError("Не удалось переместить лид");
+        setTimeout(() => setDragError(null), 3000);
       });
     },
     [leads, stages]
@@ -236,6 +241,13 @@ export function KanbanBoard() {
           Добавить лид
         </Button>
       </div>
+
+      {/* Drag error notification */}
+      {dragError && (
+        <div className="rounded-lg bg-red-500/10 border border-red-500/20 px-4 py-2 text-sm text-red-400 text-center shrink-0">
+          {dragError}
+        </div>
+      )}
 
       {/* Kanban columns */}
       <DndContext

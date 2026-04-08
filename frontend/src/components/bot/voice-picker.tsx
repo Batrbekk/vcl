@@ -39,6 +39,7 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
   const [selectedName, setSelectedName] = useState("");
+  const [error, setError] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
 
   async function fetchVoices(query = "") {
     setLoading(true);
+    setError(false);
     try {
       const params = new URLSearchParams({
         language: "ru",
@@ -61,10 +63,12 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
         ...(query ? { search: query } : {}),
       });
       const res = await fetch(`/api/voice/voices?${params}`);
+      if (!res.ok) throw new Error("API error");
       const data = await res.json();
       setVoices(data.voices || []);
     } catch (err) {
       console.error("Failed to fetch voices:", err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -185,6 +189,18 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
                 <div className="flex items-center justify-center py-16 text-sm text-zinc-500">
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Загрузка...
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center py-16 text-sm text-zinc-500 gap-3">
+                  <span>Не удалось загрузить голоса. Попробуйте снова.</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchVoices(search)}
+                    className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                  >
+                    Повторить
+                  </Button>
                 </div>
               ) : voices.length === 0 ? (
                 <div className="flex items-center justify-center py-16 text-sm text-zinc-500">
