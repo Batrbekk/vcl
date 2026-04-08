@@ -342,7 +342,7 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
     setOrbState("idle");
     setVolume(0);
 
-    // Analyze via Gemini
+    // Analyze call
     const msgs = transcriptRef.current;
     if (msgs.length > 1) {
       setAnalyzing(true);
@@ -500,7 +500,7 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
         <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 text-center">
           <div className="flex items-center justify-center gap-2 text-sm text-indigo-400">
             <div className="h-4 w-4 rounded-full border-2 border-indigo-400/30 border-t-indigo-400 animate-spin" />
-            Анализ разговора через Gemini AI...
+            Анализ разговора...
           </div>
         </div>
       )}
@@ -509,7 +509,7 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
         <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-5 space-y-4">
           <h4 className="text-sm font-medium text-white flex items-center gap-2">
             <AlertCircle className="h-4 w-4 text-indigo-400" />
-            Результат анализа (Gemini AI)
+            Результат анализа
           </h4>
           <p className="text-sm text-zinc-300 leading-relaxed">{analysis.summary}</p>
           <div className="flex items-center gap-3">
@@ -574,7 +574,7 @@ export function VoiceChat({ systemPrompt, greeting, voiceId }: VoiceChatProps) {
         <div className="text-center text-sm text-zinc-500 space-y-1">
           <p>Нажмите кнопку, чтобы начать разговор с AI-ассистентом.</p>
           <p className="text-zinc-600">
-            Голос: Fish Audio · Мозги: Gemini · STT: Web Speech API · Телефонные минуты не расходуются.
+            Разговор происходит в браузере через микрофон. Телефонные минуты не расходуются.
           </p>
         </div>
       )}

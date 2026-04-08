@@ -209,7 +209,7 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
             <div className="space-y-2">
               <Label className="text-zinc-300 flex items-center gap-2">
                 <Volume2 className="h-4 w-4 text-indigo-400" />
-                Голос (Fish Audio)
+                Голос
               </Label>
               <VoicePicker
                 selectedId={voiceId}
@@ -220,7 +220,7 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
                 }}
               />
               <p className="text-xs text-zinc-500">
-                Выберите голос и нажмите ▶ для прослушивания. Голоса от Fish Audio с поддержкой эмоций.
+                Выберите голос и нажмите ▶ для прослушивания.
               </p>
             </div>
 
@@ -403,16 +403,16 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
               <p className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Технологический стек</p>
               <div className="grid grid-cols-2 gap-2">
                 <div className="flex items-center gap-2 text-xs text-zinc-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> STT: Web Speech API
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Распознавание речи
                 </div>
                 <div className="flex items-center gap-2 text-xs text-zinc-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> LLM: Groq (Llama 3.3 70B)
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Языковая модель
                 </div>
                 <div className="flex items-center gap-2 text-xs text-zinc-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400" /> TTS: Fish Audio (S2 Pro)
+                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400" /> Синтез речи
                 </div>
                 <div className="flex items-center gap-2 text-xs text-zinc-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Телефония: VAPI + Telnyx
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Телефония
                 </div>
               </div>
             </div>
@@ -434,7 +434,7 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
           </Card>
           <Card className="border-zinc-800 bg-zinc-900">
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-zinc-400">VAPI Assistant ID</CardTitle>
+              <CardTitle className="text-sm font-medium text-zinc-400">ID ассистента</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
@@ -490,7 +490,7 @@ export function BotSettings({ botId, defaultTab = 0 }: BotSettingsProps = {}) {
               Тестирование голосового ассистента
             </CardTitle>
             <CardDescription className="text-zinc-400">
-              Поговорите с AI-ассистентом прямо в браузере. Используется Groq + Fish Audio.
+              Поговорите с AI-ассистентом прямо в браузере. Телефонные минуты не расходуются.
             </CardDescription>
           </CardHeader>
           <CardContent>

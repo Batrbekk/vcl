@@ -149,7 +149,7 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-zinc-200 truncate">{displayName || "Выберите голос..."}</p>
-          <p className="text-[11px] text-zinc-500">Fish Audio · Нажмите для выбора</p>
+          <p className="text-[11px] text-zinc-500">Нажмите для выбора голоса</p>
         </div>
         <ChevronDown className="h-4 w-4 text-zinc-500 shrink-0" />
       </button>
@@ -160,7 +160,7 @@ export function VoicePicker({ selectedId, selectedDisplayName, onSelect }: Voice
           <DialogHeader className="px-5 pt-5 pb-3">
             <DialogTitle className="text-white text-lg">Выберите голос</DialogTitle>
             <DialogDescription className="text-zinc-400 text-sm">
-              Голоса от Fish Audio. Нажмите ▶ для прослушивания.
+              Нажмите ▶ для прослушивания голоса.
             </DialogDescription>
           </DialogHeader>
 
